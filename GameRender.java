@@ -112,8 +112,6 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		mapheight= 6000;
 		mapwidth = 6000;
 		debugInfo = false;
-		screenXFactor = screenWidth/mapwidth;
-		screenYFactor = screenHeight/mapheight;
 		
 		double toRadian = Math.PI/(180*trigScale);
 		
@@ -155,6 +153,11 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		screenHeight = w.getHeight();
 		screenWidth = w.getWidth();
+		
+		screenXFactor = screenWidth/mapwidth;
+		screenYFactor = screenHeight/mapheight;
+		
+		System.out.println(screenXFactor + ", " + screenYFactor);
 		
 		/* initializing font styles */
 		int fontSize = (int)Math.round(/*Font Size:*/12.0/**/*screenWidth*.001);
