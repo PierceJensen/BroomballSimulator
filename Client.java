@@ -1,6 +1,6 @@
 //This class manages the client-side of the game Client stateflow is managed by the while->switch loop.
 //It is also capable of starting a new server instance.
-
+//This is another test comment
 import java.awt.DisplayMode;
 import java.io.*;
 import java.net.*;
