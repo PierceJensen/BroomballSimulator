@@ -154,8 +154,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		screenHeight = w.getHeight();
 		screenWidth = w.getWidth();
 		
-		screenXFactor = screenWidth/mapwidth;
-		screenYFactor = screenHeight/mapheight;
+		screenXFactor = screenWidth/(double) (mapwidth);
+		screenYFactor = screenHeight/(double) (mapheight);
 		
 		System.out.println(screenXFactor + ", " + screenYFactor);
 		
@@ -197,6 +197,9 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		//render field
 		g.setColor(Color.WHITE);
+		
+		//The base measurement
+		
 		g.fillRect(worldXToScreen(1000), worldYToScreen(4000), (int)(4000*screenXFactor), (int)(2000*screenYFactor));
 		
 		//entity draw loop
