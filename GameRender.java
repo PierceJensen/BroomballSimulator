@@ -39,6 +39,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	double magnification = 1;
 	double gameTime = 0;
+	double screenXFactor = 1;
+	double screenYFactor = 1;
 	
 	Point mouse;
 	Point center;
@@ -110,6 +112,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		mapheight= 6000;
 		mapwidth = 6000;
 		debugInfo = false;
+		screenXFactor = screenWidth/mapwidth;
+		screenYFactor = screenHeight/mapheight;
 		
 		double toRadian = Math.PI/(180*trigScale);
 		
@@ -190,7 +194,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		//render field
 		g.setColor(Color.WHITE);
-		g.fillRect(worldXToScreen(1000), worldYToScreen(4000), worldXToScreen(4000), worldYToScreen(2000));
+		g.fillRect(worldXToScreen(1000), worldYToScreen(4000), (int)(4000*screenXFactor), (int)(2000*screenYFactor));
 		
 		//entity draw loop
 		for(int i=0; i<playerArray.length; i++){
