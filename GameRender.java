@@ -4,6 +4,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Random;
 
@@ -16,8 +17,10 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	int screenWidth;
 	int screenHeight;
-	int mapheight;
-	int mapwidth;
+	double mapheight;
+	double mapwidth;
+	
+	double aspectRatio;
 	
 	int faction = 1;
 	
@@ -48,6 +51,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	Point finalPos;
 	Point mouseWorld;
 	
+	BufferedImage fieldImage;
+	
 	Robot robot;
 	
 	Random generator;
@@ -60,12 +65,14 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	IndexToTextTranslator indexToText;
 	
 	ClientStreamReader recieveDataHandler;
+	ObjectOutputStream sender;
 
 	//CLASS OUTLINE//
-	public void gameRender(ScreenManager screenmanager, ClientStreamReader reciever) {
+	public void gameRender(ScreenManager screenmanager, ClientStreamReader reciever, ObjectOutputStream sendStream) {
 		
 		sm = screenmanager;
 		recieveDataHandler = reciever;
+		sender = sendStream;
 		
 		init();
 		
@@ -94,6 +101,13 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 			}
 			
 			g.dispose();
+			
+			try{
+				sendData();
+			}catch(Exception e){
+				System.err.println("send commands");
+				e.printStackTrace();
+			}
 			
 			//update the screen
 			sm.update();
@@ -153,11 +167,10 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		screenHeight = w.getHeight();
 		screenWidth = w.getWidth();
+		aspectRatio = screenWidth/(double) (screenHeight);
 		
 		screenXFactor = screenWidth/(double) (mapwidth);
 		screenYFactor = screenHeight/(double) (mapheight);
-		
-		System.out.println(screenXFactor + ", " + screenYFactor);
 		
 		/* initializing font styles */
 		int fontSize = (int)Math.round(/*Font Size:*/12.0/**/*screenWidth*.001);
@@ -184,6 +197,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		indexToText = new IndexToTextTranslator();
 		
+		generateField();
+		
 	}
 	
 	private void networkTransmit() throws IOException{
@@ -195,12 +210,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	private void renderThings(Graphics2D g){
 		g.clearRect(0,0,screenWidth,screenHeight);
 		
-		//render field
-		g.setColor(Color.WHITE);
-		
-		//The base measurement
-		
-		g.fillRect(worldXToScreen(1000), worldYToScreen(4000), (int)(4000*screenXFactor), (int)(2000*screenYFactor));
+		g.drawImage(fieldImage, 0, 0, null);
 		
 		//entity draw loop
 		for(int i=0; i<playerArray.length; i++){
@@ -219,7 +229,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 			g.drawImage(image, xform, null);
 		}
 		
-		g.setColor(Color.YELLOW);
+		g.setColor(Color.RED);
 		g.drawString(mouseWorld.x + ", " + mouseWorld.y,  worldXToScreen(mouseWorld.x), worldYToScreen(mouseWorld.y));
 	}//end operate entities
 	
@@ -227,6 +237,14 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		g.setFont(font1);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
+	}
+	
+	private void sendData(){
+		try {
+			sender.writeDouble(gameTime);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -243,16 +261,134 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		}
 	}
 	
+	private void generateField(){
+		BufferedImage protoImage = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D g = protoImage.createGraphics();
+		
+		g.setColor(Color.WHITE);
+		
+		//The base measurement
+		double fieldWidth = 8000;
+		double fieldHeight = fieldWidth*0.68;
+		
+		
+		double leftEdgeX = (mapwidth - fieldWidth)/2;
+		double topEdgeY = (mapheight + fieldHeight)/2;
+		
+		//MAIN RECTS
+		//base field rect
+		g.fillRect(worldXToScreen(leftEdgeX), worldYToScreen(topEdgeY), (int)(fieldWidth*screenYFactor), (int)(fieldHeight*screenYFactor));
+		
+		//corners
+		//top right
+		g.setColor(Color.BLACK);
+		Polygon poly = new Polygon();
+		
+		poly.xpoints = new int[]{worldXToScreen(leftEdgeX), worldXToScreen(fieldWidth*.1 + leftEdgeX), worldXToScreen(leftEdgeX)};
+		poly.ypoints = new int[]{worldYToScreen(topEdgeY), worldYToScreen(topEdgeY), worldYToScreen(topEdgeY - fieldHeight*.15)};
+		poly.npoints = 3;
+		
+		g.fillPolygon(poly);
+		
+		//bottom left
+		poly.xpoints = new int[]{worldXToScreen(leftEdgeX), worldXToScreen(leftEdgeX), worldXToScreen(leftEdgeX + fieldWidth*.1)};
+		poly.ypoints = new int[]{worldYToScreen(topEdgeY - fieldHeight*.85), worldYToScreen(topEdgeY - fieldHeight), worldYToScreen(topEdgeY - fieldHeight)};
+		
+		g.fillPolygon(poly);
+		
+		//bottom right
+		poly.xpoints = new int[]{worldXToScreen(leftEdgeX + fieldWidth), worldXToScreen(leftEdgeX + fieldWidth), worldXToScreen(leftEdgeX + fieldWidth*.9)};
+		poly.ypoints = new int[]{worldYToScreen(topEdgeY - fieldHeight*.85), worldYToScreen(topEdgeY - fieldHeight), worldYToScreen(topEdgeY - fieldHeight)};
+		
+		g.fillPolygon(poly);
+		
+		//top right
+		poly.xpoints = new int[]{worldXToScreen(leftEdgeX + fieldWidth), worldXToScreen(leftEdgeX + fieldWidth), worldXToScreen(leftEdgeX + fieldWidth*.9)};
+		poly.ypoints = new int[]{worldYToScreen(topEdgeY - fieldHeight*.15), worldYToScreen(topEdgeY), worldYToScreen(topEdgeY)};
+		
+		g.fillPolygon(poly);
+		
+		//goals
+		//left goal
+		g.setColor(Color.WHITE);
+		
+		double goalDepth = fieldWidth*.053;
+		double goalHeight = goalDepth*2;
+		
+		g.fillRect(worldXToScreen(leftEdgeX - goalDepth), worldYToScreen(topEdgeY-fieldHeight/2+goalHeight/2), (int)(goalDepth*screenYFactor), (int)(goalHeight*screenYFactor));
+		
+		//right goal
+		g.fillRect(worldXToScreen(leftEdgeX+fieldWidth), worldYToScreen(topEdgeY-fieldHeight/2+goalHeight/2), (int)(goalDepth*screenYFactor), (int)(goalHeight*screenYFactor));
+		
+		//LINES
+		//centerline
+		double lineThickness = screenHeight*.04;
+		g.setColor(Color.RED);
+		
+		g.fillRect(worldXToScreen(leftEdgeX + fieldWidth/2 - lineThickness/2), worldYToScreen(topEdgeY), (int)(lineThickness*screenYFactor), (int)(fieldHeight*screenYFactor));
+		
+		//left goal arc
+		double circleRadius = fieldWidth*.25;
+		
+		g.fillArc(worldXToScreen(leftEdgeX - circleRadius/2), 
+				worldYToScreen(topEdgeY - fieldHeight/2 + circleRadius/2), 
+				(int)(circleRadius*screenYFactor), 
+				(int)(circleRadius*screenYFactor), 270, 180);
+		g.setColor(Color.WHITE);
+		g.fillArc(worldXToScreen(leftEdgeX - circleRadius/2 + lineThickness/2), 
+				worldYToScreen(topEdgeY - fieldHeight/2 - lineThickness/2 + circleRadius/2), 
+				(int)((circleRadius - lineThickness*.75)*screenYFactor), 
+				(int)((circleRadius - lineThickness*.75)*screenYFactor), 270, 180);
+		
+		//right goal arc
+		g.setColor(Color.RED);
+		g.fillArc(worldXToScreen(leftEdgeX + fieldWidth - circleRadius/2), 
+				worldYToScreen(topEdgeY - fieldHeight/2 + circleRadius/2), 
+				(int)(circleRadius*screenYFactor), 
+				(int)(circleRadius*screenYFactor), 90, 180);
+		g.setColor(Color.WHITE);
+		g.fillArc(worldXToScreen(leftEdgeX + fieldWidth - circleRadius/2 + lineThickness/2), 
+				worldYToScreen(topEdgeY - fieldHeight/2 - lineThickness/2 + circleRadius/2), 
+				(int)((circleRadius - lineThickness*.75)*screenYFactor), 
+				(int)((circleRadius - lineThickness*.75)*screenYFactor), 90, 180);
+		
+		//left goal box
+		double goalBoxHeight = fieldWidth*.1328;
+		double goalBoxWidth = fieldWidth*.066;
+		g.setColor(Color.BLUE);
+		g.fillRect(worldXToScreen(leftEdgeX), worldYToScreen(topEdgeY - fieldHeight/2 + goalBoxHeight/2), 
+				(int)(goalBoxWidth*screenYFactor), (int)(goalBoxHeight*screenYFactor));
+		g.setColor(Color.WHITE);
+		g.fillRect(worldXToScreen(leftEdgeX), worldYToScreen(topEdgeY - fieldHeight/2 + goalBoxHeight/2 - lineThickness*1.25), 
+				(int)(goalBoxWidth*screenYFactor - lineThickness/4), (int)(goalBoxHeight*screenYFactor - lineThickness/2));
+		
+		//right goal box
+		g.setColor(Color.BLUE);
+		g.fillRect(worldXToScreen(leftEdgeX + fieldWidth - goalBoxWidth), worldYToScreen(topEdgeY - fieldHeight/2 + goalBoxHeight/2), 
+				(int)(goalBoxWidth*screenYFactor), (int)(goalBoxHeight*screenYFactor));
+		g.setColor(Color.WHITE);
+		g.fillRect(worldXToScreen(leftEdgeX + fieldWidth + lineThickness*1.5 - goalBoxWidth), worldYToScreen(topEdgeY - fieldHeight/2 + goalBoxHeight/2 - lineThickness*1.25), 
+				(int)(goalBoxWidth*screenYFactor - lineThickness/4), (int)(goalBoxHeight*screenYFactor - lineThickness/2));
+		
+		//left goal line
+		g.setColor(Color.BLUE);
+		g.fillRect(worldXToScreen(leftEdgeX - lineThickness), worldYToScreen(topEdgeY - fieldHeight/2 + goalHeight/2), (int)(lineThickness*screenYFactor), (int)(goalHeight*screenYFactor));
+		
+		g.fillRect(worldXToScreen(leftEdgeX + fieldWidth), worldYToScreen(topEdgeY - fieldHeight/2 + goalHeight/2), (int)(lineThickness*screenYFactor), (int)(goalHeight*screenYFactor));
+		
+		fieldImage = protoImage;
+	}
+	
 	//translates a world coordinate into a screen coordinate with magnification factored in
 	int worldXToScreen(double worldX){
-		return (int) ((worldX/mapwidth)*screenWidth);
+		return (int) ((screenWidth - screenHeight)*.5 + (worldX/mapwidth)*screenHeight);
 	}
 	int worldYToScreen(double worldY){
 		return (int) ((1 - worldY/mapheight)*screenHeight);
 	}
 	
 	double screenXToWorld(double screenX){
-		return (screenX/screenWidth)*mapwidth;
+		return ((screenX - (screenWidth - screenHeight)/2)*(mapwidth/screenHeight));
 	}
 	double screenYToWorld(double screenY){
 		return (1 - screenY/screenHeight)*mapheight;

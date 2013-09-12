@@ -17,6 +17,7 @@ public class Client extends Thread {
 	GameRender gameRender;
 	
 	ClientStreamReader clientReader;
+	ObjectOutputStream clientSender;
 	
 	Socket sock;
 	
@@ -94,10 +95,12 @@ public class Client extends Thread {
 			objInStream = new ObjectInputStream(sock.getInputStream());
 			
 			clientReader = new ClientStreamReader(objInStream);
+			clientSender = new ObjectOutputStream(sock.getOutputStream());
+			
 			
 			//renders game data
 			gameRender = new GameRender();
-			gameRender.gameRender(sm, clientReader);//This is the render game loop!
+			gameRender.gameRender(sm, clientReader, clientSender);//This is the render game loop!
 			
 			//END GAME CODE STARTS NOW//
 			
@@ -113,6 +116,7 @@ public class Client extends Thread {
 		
 		//end server
 		gameServer.stop();
+		gameServer.timer.cancel();
 		
 	}
 	

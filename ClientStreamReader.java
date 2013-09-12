@@ -28,6 +28,7 @@ public class ClientStreamReader implements Runnable {
 				if(inStream.available() > 0){
 					
 					gameTime = inStream.readDouble();
+					System.out.println("client recieved data");
 					//playerArray = (int[][]) inStream.readObject();
 				}
 			} catch(Exception e){

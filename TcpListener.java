@@ -9,14 +9,14 @@ public class TcpListener implements Runnable{
 	
 	Socket[] clients;
 	ObjectOutputStream[] streams;
-	
-	public int newPlayer;
+	ServerDataListener dataHandler;
 	
 	boolean running = true;
 
-	public TcpListener() {
+	public TcpListener(ServerDataListener dataListen) {
 		clients = new Socket[10];
 		streams = new ObjectOutputStream[10];
+		dataHandler = dataListen;
 		
 		Thread t = new Thread(this, "tcp listener");
 		
@@ -32,36 +32,18 @@ public class TcpListener implements Runnable{
 	@Override
 	public void run() {
 		
-		try{
-			Socket sock = servSock.accept();
-			System.out.println("client has connected");
-			
-			addClientToList(sock);
-			
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		Socket sock;
 		
 		while(running){//tcp listener main loop
-			for(int i=0;i<clients.length;i++){//check for disconnections
-				if(clients[i] == null) continue;
-				
-				if(!clients[i].isConnected()){
-					
-					try {
-						clients[i].close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					
-					streams[i] = null;
-					clients[i] = null;
-				}
-			}
-			
 			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {}
+				sock = servSock.accept();
+				System.out.println("client has connected");
+				
+				addClientToList(sock);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		for(int i=0;i<clients.length;i++){//close all connections
@@ -85,7 +67,8 @@ public class TcpListener implements Runnable{
 					sock.setSendBufferSize(512);
 					
 					streams[i] = new ObjectOutputStream(sock.getOutputStream());
-					newPlayer = i;
+
+					dataHandler.streams[i] = new ObjectInputStream(sock.getInputStream());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

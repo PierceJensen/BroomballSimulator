@@ -303,7 +303,7 @@ public class GameMechanics {
 		}
 	}
 	
-	public void sendData(ObjectOutputStream[] streams, double time, int newPlayer){
+	public void sendData(ObjectOutputStream[] streams, double time){
 		for(int i=0;i<streams.length;i++){
 			if(streams[i] == null) continue;
 			

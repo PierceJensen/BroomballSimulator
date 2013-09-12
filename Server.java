@@ -13,6 +13,7 @@ class Server extends TimerTask {
 	public double gameTime;
 	
 	TcpListener clientListen;
+	ServerDataListener dataListen;
 	
 	////////////////////////////////////
 	//     OPERATE PERIOD VARIABLE    //
@@ -28,8 +29,11 @@ class Server extends TimerTask {
 		game = new GameMechanics();
 		game.init();
 		
+		//start client data listener
+		dataListen = new ServerDataListener();
+		
 		//start client connection listener
-		clientListen = new TcpListener();
+		clientListen = new TcpListener(dataListen);
 		
 		startLoops();
 	}
@@ -40,8 +44,6 @@ class Server extends TimerTask {
 		new Timer().schedule(new TimerTask() {	
 			public void run() {
 				gameLoop();
-				
-				if(!running){cancel();}
 			}
 		}, 0, (long) (1000*period));
 	}
@@ -54,13 +56,13 @@ class Server extends TimerTask {
 	void gameLoop(){
 		if(!running){
 			clientListen.running = false;
+			dataListen.running = false;
 			return;
 		}
 		
 		game.operateEntities(period);
 		
-		game.sendData(clientListen.streams, gameTime, clientListen.newPlayer);
-		clientListen.newPlayer = -1;
+		game.sendData(clientListen.streams, gameTime);
 		
 		gameTime += period;
 		

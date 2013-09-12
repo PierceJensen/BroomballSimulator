@@ -61,18 +61,18 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 			
 			buttonHovered = 0;
 			
-			if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.21 && mouse.y > screenHeight*.06 && mouse.y < screenHeight*.08){
+			if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.21 && mouse.y > screenHeight*.18 && mouse.y < screenHeight*.20){
 				g.setColor(Color.YELLOW);
 				buttonHovered = HOVER_START;
 			}
-			g.drawString("Start Game", (int) (screenHeight*.1), (int) (screenHeight*.08));
-			if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.15 && mouse.y > screenHeight*.1 && mouse.y < screenHeight*.12){
+			g.drawString("Start Game", (int) (screenHeight*.1), (int) (screenHeight*.20));
+			if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.15 && mouse.y > screenHeight*.22 && mouse.y < screenHeight*.24){
 				g.setColor(Color.YELLOW);
 				buttonHovered = HOVER_EXIT;
 			}else{
 				g.setColor(Color.WHITE);
 			}
-			g.drawString("Exit", (int) (screenHeight*.1), (int) (screenHeight*.12));
+			g.drawString("Exit", (int) (screenHeight*.1), (int) (screenHeight*.24));
 			
 			g.setColor(Color.WHITE);
 			g.drawString("Pre-Alpha", (int) (screenWidth - screenHeight*.4), (int) (screenHeight*.20));
