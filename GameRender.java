@@ -387,6 +387,53 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		g.fillRect(worldXToScreen(leftEdgeX + fieldWidth), worldYToScreen(topEdgeY - fieldHeight/2 + goalHeight/2), (int)(lineThickness*screenYFactor), (int)(goalHeight*screenYFactor));
 		
 		fieldImage = protoImage;
+		
+		final int PlayerSizeX=50;
+		final int PlayerSizeY=25;
+		final int ActivePlayerBorder=5;
+		final int BallDiameter=5;
+		
+		BufferedImage BluePlayerTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D BPT = BluePlayerTemp.createGraphics();
+	
+		BPT.setColor(Color.BLUE);
+		
+		BPT.fillRect(0, 0, PlayerSizeX, PlayerSizeY);
+		bluePlayer = BluePlayerTemp;
+			
+		BufferedImage BluePlayerActiveTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D BPAT = BluePlayerActiveTemp.createGraphics();
+	
+		BPAT.setColor(Color.WHITE);
+		
+		BPAT.fillRect(0, 0, PlayerSizeX, PlayerSizeY);
+		
+		BPAT.setColor(Color.BLUE);
+		
+		BPAT.fillRect(ActivePlayerBorder, ActivePlayerBorder, PlayerSizeX-2*ActivePlayerBorder, PlayerSizeY-2*ActivePlayerBorder);
+		
+		blueActivePlayer = BluePlayerActiveTemp;
+		
+		BufferedImage RluePlayerTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D RPT = RluePlayerTemp.createGraphics();
+	
+		RPT.setColor(Color.RED);
+		
+		RPT.fillRect(0, 0, PlayerSizeX, PlayerSizeY);
+		redPlayer = RluePlayerTemp;
+			
+		BufferedImage RedPlayerActiveTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D RPAT = RedPlayerActiveTemp.createGraphics();
+	
+		RPAT.setColor(Color.WHITE);
+		
+		RPAT.fillRect(0, 0, PlayerSizeX, PlayerSizeY);
+		
+		RPAT.setColor(Color.RED);
+		
+		RPAT.fillRect(ActivePlayerBorder, ActivePlayerBorder, PlayerSizeX-2*ActivePlayerBorder, PlayerSizeY-2*ActivePlayerBorder);
+		
+		redActivePlayer = RedPlayerActiveTemp;
 	}
 	
 	//translates a world coordinate into a screen coordinate with magnification factored in
@@ -586,9 +633,9 @@ public void mousePressed(MouseEvent e) {
 	Image imageIdToImage(int id){
 		switch(id + faction){
 		case 1:
-			return new ImageIcon("C:\\test\\bluetestsprite.png").getImage();
+			return bluePlayer;
 		case 2:
-			return new ImageIcon("C:\\test\\redtestsprite.png").getImage();
+			return redPlayer;
 		default:
 			System.out.println("returned null from imageIdToImage!");
 			return null;
