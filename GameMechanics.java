@@ -130,7 +130,17 @@ public class GameMechanics {
 			
 			int[] entityArray = convertEntToArray(entity);
 			
-			entity.bearing = Math.toDegrees(Math.atan2(mouseY[i] - entity.y, mouseX[i] - entity.x));
+			double bearingToTarget =  Math.toDegrees(Math.atan2(mouseY[i] - entity.y, mouseX[i] - entity.x));
+			if(bearingToTarget < 0)bearingToTarget += 360;
+			if(i==0)System.out.println("raw: " + bearingToTarget);
+			bearingToTarget -= entity.bearing;
+			if(i==0)System.out.println(bearingToTarget);
+			if(bearingToTarget > 180)bearingToTarget = 180 - bearingToTarget;
+			if(bearingToTarget >= 0){
+				entity.radv = 60;
+			} else{
+				entity.radv = -60;
+			}
 			
 			entity.walking = keyArray[i][KEY_W] == 1 | keyArray[i][KEY_S] == 1;
 			

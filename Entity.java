@@ -72,18 +72,6 @@ public class Entity extends GameMechanics{
 		preX = this.x;
 		preY = this.y;
 		
-		if(this.radv != 0 && this.radFriction != 0){//friction
-			if(sign(this.radv + this.radFriction*sign(this.radv)*period) == sign(this.radv) || this.rada != 0)
-			{
-				this.rada -= this.radFriction*sign(this.radv)*period;
-			}else{
-				this.radv = 0;
-			}
-		}
-		
-		this.radv += this.rada;
-		this.rada = 0;
-		
 		this.bearing += this.radv*period; //add radial velocity to bearing
 		
 		if(this.bearing >= 360){
@@ -149,13 +137,6 @@ public class Entity extends GameMechanics{
 		
 		return false;
 	}//end move void
-	
-	
-	
-	public double applyTorque(double torque){
-		return (torque) / this.radInertia;
-		
-	}
 	
 	public double applyForceX(double force, double angle){
 		
