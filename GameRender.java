@@ -35,7 +35,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	boolean running;
 	
-	boolean[] keyArray;
+	int[] keyArray;
 	
 	private static int trigScale = 1;//accuracy of trigonometry tables, in entries per degree
 	public static float[] sin;
@@ -201,10 +201,9 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		generateField();
 		
-		keyArray = new boolean[10];
+		keyArray = new int[10];
 		
 		playerNumber = recieveDataHandler.playerNumber;
-		System.out.println("player number: " + playerNumber);
 		
 	}
 	
@@ -539,17 +538,17 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 public void mousePressed(MouseEvent e) {
 		if(SwingUtilities.isLeftMouseButton(e)){
-			keyArray[0] = true;
+			keyArray[0] = 1;
 		} else if (SwingUtilities.isRightMouseButton(e)){
-			keyArray[1] = true;
+			keyArray[1] = 1;
 		}
 	}
 	
 	public void mouseReleased(MouseEvent e) {
 		if(SwingUtilities.isLeftMouseButton(e)){
-			keyArray[0] = false;
+			keyArray[0] = 0;
 		} else if (SwingUtilities.isRightMouseButton(e)){
-			keyArray[1] = false;
+			keyArray[1] = 0;
 		}
 	}
 	
@@ -570,28 +569,28 @@ public void mousePressed(MouseEvent e) {
 			running = false;
 			break;
 		case KeyEvent.VK_W :
-			keyArray[2] = true;
+			keyArray[2] = 1;
 			break;
 		case KeyEvent.VK_A :
-			keyArray[3] = true;
+			keyArray[3] = 1;
 			break;
 		case KeyEvent.VK_S :
-			keyArray[4] = true;
+			keyArray[4] = 1;
 			break;
 		case KeyEvent.VK_D :
-			keyArray[5] = true;
+			keyArray[5] = 1;
 			break;
 		case KeyEvent.VK_SHIFT :
-			keyArray[6] = true;
+			keyArray[6] = 1;
 			break;
 		case KeyEvent.VK_CONTROL :
-			keyArray[7] = true;
+			keyArray[7] = 1;
 			break;
 		case KeyEvent.VK_ALT :
-			keyArray[8] = true;
+			keyArray[8] = 1;
 			break;
 		case KeyEvent.VK_SPACE :
-			keyArray[9] = true;
+			keyArray[9] = 1;
 			break;
 		default :
 			break;
@@ -602,28 +601,28 @@ public void mousePressed(MouseEvent e) {
 		
 		switch(e.getKeyCode()){
 		case KeyEvent.VK_W :
-			keyArray[2] = false;
+			keyArray[2] = 0;
 			break;
 		case KeyEvent.VK_A :
-			keyArray[3] = false;
+			keyArray[3] = 0;
 			break;
 		case KeyEvent.VK_S :
-			keyArray[4] = false;
+			keyArray[4] = 0;
 			break;
 		case KeyEvent.VK_D :
-			keyArray[5] = false;
+			keyArray[5] = 0;
 			break;
 		case KeyEvent.VK_SHIFT :
-			keyArray[6] = false;
+			keyArray[6] = 0;
 			break;
 		case KeyEvent.VK_CONTROL :
-			keyArray[7] = false;
+			keyArray[7] = 0;
 			break;
 		case KeyEvent.VK_ALT :
-			keyArray[8] = false;
+			keyArray[8] = 0;
 			break;
 		case KeyEvent.VK_SPACE :
-			keyArray[9] = false;
+			keyArray[9] = 0;
 			break;
 		default :
 			break;
