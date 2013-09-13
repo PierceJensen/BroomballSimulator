@@ -1,6 +1,6 @@
 //This class renders the game for the client using data acquired from ClientStreamRender.
 //It also operates in-game UI
-
+//Added 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
@@ -35,6 +35,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	boolean running;
 	
+	boolean[] keyArray;
+	
 	private static int trigScale = 1;//accuracy of trigonometry tables, in entries per degree
 	public static float[] sin;
 	public static float[] cos;
@@ -52,6 +54,10 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	Point mouseWorld;
 	
 	BufferedImage fieldImage;
+	BufferedImage bluePlayer;
+	BufferedImage redPlayer;
+	BufferedImage blueActivePlayer;
+	BufferedImage redActivePlayer;
 	
 	Robot robot;
 	
@@ -61,8 +67,6 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	int[] displayedUnit;
 	
 	int[][] playerArray;
-	
-	IndexToTextTranslator indexToText;
 	
 	ClientStreamReader recieveDataHandler;
 	ObjectOutputStream sender;
@@ -195,9 +199,9 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		generator = new Random();
 		
-		indexToText = new IndexToTextTranslator();
-		
 		generateField();
+		
+		keyArray = new boolean[10];
 		
 	}
 	
@@ -227,6 +231,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 			
 			//draws the entity
 			g.drawImage(image, xform, null);
+			g.setColor(Color.RED);
+			g.drawLine(worldXToScreen(entity[0]), worldYToScreen(entity[1]), (int)worldXToScreen(entity[0] + cos(entity[2])*300), (int)worldYToScreen(entity[1] + sin(entity[2])*300));
 		}
 		
 		g.setColor(Color.RED);
@@ -241,7 +247,11 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	private void sendData(){
 		try {
-			sender.writeDouble(gameTime);
+			sender.writeInt(mouseWorld.x);
+			sender.writeInt(mouseWorld.y);
+			sender.writeObject(keyArray);
+			
+			sender.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -478,10 +488,20 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	}
 	
 public void mousePressed(MouseEvent e) {
-
+		if(SwingUtilities.isLeftMouseButton(e)){
+			keyArray[0] = true;
+		} else if (SwingUtilities.isRightMouseButton(e)){
+			keyArray[1] = true;
+		}
 	}
 	
-	public void mouseReleased(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {
+		if(SwingUtilities.isLeftMouseButton(e)){
+			keyArray[0] = false;
+		} else if (SwingUtilities.isRightMouseButton(e)){
+			keyArray[1] = false;
+		}
+	}
 	
 	public void mouseEntered(MouseEvent e) {}
 	
@@ -499,6 +519,30 @@ public void mousePressed(MouseEvent e) {
 		case KeyEvent.VK_ESCAPE ://escape key ends the script
 			running = false;
 			break;
+		case KeyEvent.VK_W :
+			keyArray[2] = true;
+			break;
+		case KeyEvent.VK_A :
+			keyArray[3] = true;
+			break;
+		case KeyEvent.VK_S :
+			keyArray[4] = true;
+			break;
+		case KeyEvent.VK_D :
+			keyArray[5] = true;
+			break;
+		case KeyEvent.VK_SHIFT :
+			keyArray[6] = true;
+			break;
+		case KeyEvent.VK_CONTROL :
+			keyArray[7] = true;
+			break;
+		case KeyEvent.VK_ALT :
+			keyArray[8] = true;
+			break;
+		case KeyEvent.VK_SPACE :
+			keyArray[9] = true;
+			break;
 		default :
 			break;
 		}
@@ -507,6 +551,30 @@ public void mousePressed(MouseEvent e) {
 	public void keyReleased(KeyEvent e){
 		
 		switch(e.getKeyCode()){
+		case KeyEvent.VK_W :
+			keyArray[2] = false;
+			break;
+		case KeyEvent.VK_A :
+			keyArray[3] = false;
+			break;
+		case KeyEvent.VK_S :
+			keyArray[4] = false;
+			break;
+		case KeyEvent.VK_D :
+			keyArray[5] = false;
+			break;
+		case KeyEvent.VK_SHIFT :
+			keyArray[6] = false;
+			break;
+		case KeyEvent.VK_CONTROL :
+			keyArray[7] = false;
+			break;
+		case KeyEvent.VK_ALT :
+			keyArray[8] = false;
+			break;
+		case KeyEvent.VK_SPACE :
+			keyArray[9] = false;
+			break;
 		default :
 			break;
 		}

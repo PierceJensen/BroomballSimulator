@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
-//                              Broomball Simulator                                     //
+//                                EPIC SPACE BATTLE                                     //
 //                                    a game by                                         //
-//                        Spencer Allen and Pierce Jensen                               //
+//                                  Spencer Allen                                       //
 //////////////////////////////////////////////////////////////////////////////////////////
 
 //This class manages all gameplay mechanics.
@@ -16,6 +16,18 @@ public class GameMechanics {
 	public static final int AL_ADD = 0;
 	public static final int AL_READ = 1;
 	public static final int AL_REMOVE = 2;
+	
+	//player key boolean table index defines
+	private final int KEY_LMOUSE = 0;
+	private final int KEY_RMOUSE = 1;
+	private final int KEY_W = 2;
+	private final int KEY_A = 3;
+	private final int KEY_S = 4;
+	private final int KEY_D = 5;
+	private final int KEY_SHIFT = 6;
+	private final int KEY_CONTROL = 7;
+	private final int KEY_ALT = 8;
+	private final int KEY_SPACE = 9;
 	
 	static int colCount = 0;
 	
@@ -43,6 +55,10 @@ public class GameMechanics {
 	public Random generator;
 	
 	public double period;
+	
+	int[] mouseX;
+	int[] mouseY;
+	boolean[][] keyArray;
 	
 	//initialization
 	public void init(){
@@ -113,6 +129,20 @@ public class GameMechanics {
 			Entity entity = operateEntityList(AL_READ, i, null);
 			
 			int[] entityArray = convertEntToArray(entity);
+			
+			entity.bearing = Math.toDegrees(Math.atan2(mouseY[i] - entity.y, mouseX[i] - entity.x));
+			
+			entity.walking = keyArray[i][KEY_W] | keyArray[i][KEY_S];
+			
+			if(keyArray[i][KEY_W]){
+				entity.walkDirection = 1;
+			} else if(keyArray[i][KEY_S]){
+				entity.walkDirection = -1;
+			}
+			
+			for(int j=0;j<10;j++){
+				if(keyArray[i][j])System.out.println(j + "wooo!");
+			}
 			
 			//updates every entity's position. also capable of removing the entity
 			if(entity.move(period)){
@@ -310,6 +340,7 @@ public class GameMechanics {
 			try {
 				
 				streams[i].writeDouble(time);
+				//streams[i].writeObject(obj);
 				
 				streams[i].flush();
 			} catch (Exception e) {

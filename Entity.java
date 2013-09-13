@@ -33,6 +33,7 @@ public class Entity extends GameMechanics{
 	double size;
 	
 	int type;//playertype
+	int walkDirection;
 	
 	boolean walking = false;
 	
@@ -52,6 +53,7 @@ public class Entity extends GameMechanics{
 		this.maxlinSpeed = 200;
 		this.mass = 5;
 		this.radInertia = 5;
+		this.walkForce = 500;
 	}
 	
 	public void ballInit(){
@@ -90,12 +92,10 @@ public class Entity extends GameMechanics{
 			this.bearing += 360;
 		}
 		
-		
-		
 		//forward motion
 		if(this.walking && sqr(this.vx) + sqr(this.vy) < sqr(this.maxlinSpeed)){
-			this.ax += this.applyForceX(this.walkForce*period, this.bearing);
-			this.ay += this.applyForceY(this.walkForce*period, this.bearing);
+			this.ax += this.applyForceX(this.walkDirection*this.walkForce*period, this.bearing);
+			this.ay += this.applyForceY(this.walkDirection*this.walkForce*period, this.bearing);
 		}
 		
 		double theta = Math.toDegrees(Math.atan2(this.vy,this.vx));

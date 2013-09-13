@@ -43,6 +43,7 @@ class Server extends TimerTask {
 		timer = new Timer();	
 		new Timer().schedule(new TimerTask() {	
 			public void run() {
+				
 				gameLoop();
 			}
 		}, 0, (long) (1000*period));
@@ -59,6 +60,10 @@ class Server extends TimerTask {
 			dataListen.running = false;
 			return;
 		}
+		
+		game.mouseX = dataListen.mouseX;
+		game.mouseY = dataListen.mouseY;
+		game.keyArray = dataListen.keyArray;
 		
 		game.operateEntities(period);
 		
