@@ -1,6 +1,7 @@
 //This thread handles incoming packets as they arrive, and stores the data for later 
 //reference by GameRender
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 
 public class ClientStreamReader implements Runnable {
@@ -10,11 +11,19 @@ public class ClientStreamReader implements Runnable {
 	private ObjectInputStream inStream;
 	
 	public double gameTime;
+	public int playerNumber;
 	
 	public int[][] playerArray;
 	
 	public ClientStreamReader(ObjectInputStream in) {
 		inStream = in;
+		
+		//recieve player number
+		try {
+			playerNumber = inStream.readInt();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		//start the thread
 		Thread t = new Thread(this, "client stream reader");

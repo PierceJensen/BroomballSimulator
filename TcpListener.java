@@ -67,6 +67,7 @@ public class TcpListener implements Runnable{
 					sock.setSendBufferSize(512);
 					
 					streams[i] = new ObjectOutputStream(sock.getOutputStream());
+					streams[i].writeInt(i);
 
 					dataHandler.streams[i] = new ObjectInputStream(sock.getInputStream());
 				} catch (Exception e) {

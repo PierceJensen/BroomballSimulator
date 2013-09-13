@@ -203,6 +203,9 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		keyArray = new boolean[10];
 		
+		playerNumber = recieveDataHandler.playerNumber;
+		System.out.println("player number: " + playerNumber);
+		
 	}
 	
 	private void networkTransmit() throws IOException{
