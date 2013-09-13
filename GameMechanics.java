@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
-//                                EPIC SPACE BATTLE                                     //
+//                               Broomball Simulator                                    //
 //                                    a game by                                         //
-//                                  Spencer Allen                                       //
+//                        Spencer Allen and Pierce Jensen                               //
 //////////////////////////////////////////////////////////////////////////////////////////
 
 //This class manages all gameplay mechanics.
