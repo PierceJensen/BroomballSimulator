@@ -209,8 +209,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	private void networkTransmit() throws IOException{
 		//retrieve arrays
-		//playerArray = recieveDataHandler.playerArray;
-		playerArray = GameMechanics.playerArray;
+		playerArray = recieveDataHandler.playerArray;
 	}
 	
 	private void renderThings(Graphics2D g){

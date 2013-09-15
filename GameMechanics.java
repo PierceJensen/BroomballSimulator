@@ -130,7 +130,7 @@ public class GameMechanics {
 			
 			int[] entityArray = convertEntToArray(entity);
 			
-			double turnRate = 360;
+			double turnRate = 720;
 			
 			double bearingToTarget =  Math.toDegrees(Math.atan2(mouseY[i] - entity.y, mouseX[i] - entity.x));
 			bearingToTarget = angDisplacement(bearingToTarget, entity.bearing);
@@ -362,7 +362,7 @@ public class GameMechanics {
 			try {
 				
 				streams[i].writeDouble(time);
-				//streams[i].writeObject(obj);
+				streams[i].writeObject(playerArray);
 				
 				streams[i].flush();
 			} catch (Exception e) {
