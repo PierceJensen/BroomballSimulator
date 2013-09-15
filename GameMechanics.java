@@ -130,16 +130,17 @@ public class GameMechanics {
 			
 			int[] entityArray = convertEntToArray(entity);
 			
+			double turnRate = 360;
+			
 			double bearingToTarget =  Math.toDegrees(Math.atan2(mouseY[i] - entity.y, mouseX[i] - entity.x));
-			if(bearingToTarget < 0)bearingToTarget += 360;
-			if(i==0)System.out.println("raw: " + bearingToTarget);
-			bearingToTarget -= entity.bearing;
-			if(i==0)System.out.println(bearingToTarget);
-			if(bearingToTarget > 180)bearingToTarget = 180 - bearingToTarget;
-			if(bearingToTarget >= 0){
-				entity.radv = 60;
+			bearingToTarget = angDisplacement(bearingToTarget, entity.bearing);
+			if(abs(bearingToTarget) < turnRate*period){
+				entity.radv = 0;
+				entity.bearing -= bearingToTarget;
+			}else if(bearingToTarget >= 0){
+				entity.radv = -turnRate;
 			} else{
-				entity.radv = -60;
+				entity.radv = turnRate;
 			}
 			
 			entity.walking = keyArray[i][KEY_W] == 1 | keyArray[i][KEY_S] == 1;
@@ -315,6 +316,17 @@ public class GameMechanics {
 		}else{
 			return x;
 		}
+	}
+	
+	public double angDisplacement(double a1, double a2){
+		double angle = Math.max(a1 - a2, a2 - a1);
+		if (angle > 180){
+			angle -= 360;
+		} else if(a1 > a2){
+			angle *= -1;
+		}
+		
+		return angle;
 	}
 	
 	//custom sign method
