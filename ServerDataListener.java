@@ -10,7 +10,9 @@ public class ServerDataListener implements Runnable {
 	int mouseX[];
 	int mouseY[];
 	
-	int keyArray[][];
+	boolean keyArray[][];
+	
+	int keyArraySize = 10;
 	
 	ServerDataListener(){
 		Thread t = new Thread(this, "data listener");
@@ -18,7 +20,7 @@ public class ServerDataListener implements Runnable {
 		
 		mouseX = new int[10];
 		mouseY = new int[10];
-		keyArray = new int[10][10];
+		keyArray = new boolean[10][keyArraySize];
 		
 		t.start();
 	}
@@ -31,12 +33,11 @@ public class ServerDataListener implements Runnable {
 					if(streams[i].available() <= 0) continue;
 					 mouseX[i] = streams[i].readInt();
 					 mouseY[i] = streams[i].readInt();
-					 int[] tempArray = (int[]) streams[i].readObject();
-					 keyArray[i] = tempArray;
 					 
-					 for(int j=0;j<10;j++){
-						if(tempArray[j] == 1)System.out.println(j);
-					}
+					 for(int j=0;j<keyArraySize;j++){
+						 keyArray[i][j] = streams[i].readBoolean();
+					 }
+					 
 				}catch(Exception e){
 					e.printStackTrace();
 				}

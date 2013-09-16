@@ -50,14 +50,14 @@ public class Entity extends GameMechanics{
 		this.size = 400;
 		this.type = 0;
 		this.maxRadSpeed = 100;
-		this.maxlinSpeed = 200;
+		this.maxlinSpeed = 1000;
 		this.mass = 5;
 		this.radInertia = 5;
-		this.walkForce = 500;
+		this.walkForce = 5000;
 	}
 	
 	public void ballInit(){
-		this.linFriction = 500;
+		this.linFriction = 100;
 		this.radFriction = 0;
 		this.size = 41;
 		this.maxRadSpeed = 300;

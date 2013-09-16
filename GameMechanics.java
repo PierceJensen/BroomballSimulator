@@ -58,7 +58,7 @@ public class GameMechanics {
 	
 	int[] mouseX;
 	int[] mouseY;
-	int[][] keyArray;
+	boolean[][] keyArray;
 	
 	//initialization
 	public void init(){
@@ -143,16 +143,12 @@ public class GameMechanics {
 				entity.radv = turnRate;
 			}
 			
-			entity.walking = keyArray[i][KEY_W] == 1 | keyArray[i][KEY_S] == 1;
+			entity.walking = keyArray[i][KEY_W] | keyArray[i][KEY_S];
 			
-			if(keyArray[i][KEY_W] == 1){
+			if(keyArray[i][KEY_W]){
 				entity.walkDirection = 1;
-			} else if(keyArray[i][KEY_S] == 1){
+			} else if(keyArray[i][KEY_S]){
 				entity.walkDirection = -1;
-			}
-			
-			for(int j=0;j<10;j++){
-				if(keyArray[i][j] == 1)System.out.println(j + "wooo!");
 			}
 			
 			//updates every entity's position. also capable of removing the entity
