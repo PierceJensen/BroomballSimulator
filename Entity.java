@@ -121,17 +121,22 @@ public class Entity extends GameMechanics{
 		
 
 		//map bound handlers
+		int leftBound = -1000;
+		int topBound = 5720;
+		int bottomBound = 280;
+		int rightBound = 7000;
+		
 		if(this.type == 0 || this.type == 1){
-			if(this.x < 10){ //left-right map bound stopper
-				this.x = 10;
-			}else if(this.x > mapheight - 10){
-				this.x = mapheight - 10;
+			if(this.x < leftBound + this.size){ //left-right map bound stopper
+				this.x = leftBound + this.size;
+			}else if(this.x > rightBound - this.size){
+				this.x = rightBound - this.size;
 			}
 			
-			if(this.y < 10){ //top-bottom map bound stopper
-				this.y = 10;
-			}else if(this.y > mapheight - 10){
-				this.y = mapheight - 10;
+			if(this.y > topBound - this.size){ //top-bottom map bound stopper
+				this.y = topBound - this.size;
+			}else if(this.y < bottomBound + this.size){
+				this.y = bottomBound + this.size;
 			}
 		}
 		
