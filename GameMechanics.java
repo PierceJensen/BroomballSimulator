@@ -44,7 +44,7 @@ public class GameMechanics {
 	public static boolean debugInfo = false;
 	
 	int mapheight = 6000;
-	int mapwidth = 6000;
+	int mapwidth = (int) (mapheight/.68);
 	
 	ArrayList<Entity> playerList;
 	ArrayList<int[]> playerArrayList;
