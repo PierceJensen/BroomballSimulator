@@ -26,6 +26,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	int playerNumber;
 	
+	int keyArraySize = 10;
+	
 	private Font font1;
 	private Font font2;
 	private Font font3;
@@ -35,7 +37,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	boolean running;
 	
-	int[] keyArray;
+	boolean[] keyArray;
 	
 	private static int trigScale = 1;//accuracy of trigonometry tables, in entries per degree
 	public static float[] sin;
@@ -201,7 +203,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		generateField();
 		
-		keyArray = new int[10];
+		keyArray = new boolean[keyArraySize];
 		
 		playerNumber = recieveDataHandler.playerNumber;
 		
@@ -250,7 +252,10 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		try {
 			sender.writeInt(mouseWorld.x);
 			sender.writeInt(mouseWorld.y);
-			sender.writeObject(keyArray);
+			
+			for(int i=0;i<keyArraySize;i++){
+				sender.writeBoolean(keyArray[i]);
+			}
 			
 			sender.flush();
 		} catch (Exception e) {
@@ -537,17 +542,17 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 public void mousePressed(MouseEvent e) {
 		if(SwingUtilities.isLeftMouseButton(e)){
-			keyArray[0] = 1;
+			keyArray[0] = true;
 		} else if (SwingUtilities.isRightMouseButton(e)){
-			keyArray[1] = 1;
+			keyArray[1] = true;
 		}
 	}
 	
 	public void mouseReleased(MouseEvent e) {
 		if(SwingUtilities.isLeftMouseButton(e)){
-			keyArray[0] = 0;
+			keyArray[0] = false;
 		} else if (SwingUtilities.isRightMouseButton(e)){
-			keyArray[1] = 0;
+			keyArray[1] = false;
 		}
 	}
 	
@@ -568,28 +573,28 @@ public void mousePressed(MouseEvent e) {
 			running = false;
 			break;
 		case KeyEvent.VK_W :
-			keyArray[2] = 1;
+			keyArray[2] = true;
 			break;
 		case KeyEvent.VK_A :
-			keyArray[3] = 1;
+			keyArray[3] = true;
 			break;
 		case KeyEvent.VK_S :
-			keyArray[4] = 1;
+			keyArray[4] = true;
 			break;
 		case KeyEvent.VK_D :
-			keyArray[5] = 1;
+			keyArray[5] = true;
 			break;
 		case KeyEvent.VK_SHIFT :
-			keyArray[6] = 1;
+			keyArray[6] = true;
 			break;
 		case KeyEvent.VK_CONTROL :
-			keyArray[7] = 1;
+			keyArray[7] = true;
 			break;
 		case KeyEvent.VK_ALT :
-			keyArray[8] = 1;
+			keyArray[8] = true;
 			break;
 		case KeyEvent.VK_SPACE :
-			keyArray[9] = 1;
+			keyArray[9] = true;
 			break;
 		default :
 			break;
@@ -600,28 +605,28 @@ public void mousePressed(MouseEvent e) {
 		
 		switch(e.getKeyCode()){
 		case KeyEvent.VK_W :
-			keyArray[2] = 0;
+			keyArray[2] = false;
 			break;
 		case KeyEvent.VK_A :
-			keyArray[3] = 0;
+			keyArray[3] = false;
 			break;
 		case KeyEvent.VK_S :
-			keyArray[4] = 0;
+			keyArray[4] = false;
 			break;
 		case KeyEvent.VK_D :
-			keyArray[5] = 0;
+			keyArray[5] = false;
 			break;
 		case KeyEvent.VK_SHIFT :
-			keyArray[6] = 0;
+			keyArray[6] = false;
 			break;
 		case KeyEvent.VK_CONTROL :
-			keyArray[7] = 0;
+			keyArray[7] = false;
 			break;
 		case KeyEvent.VK_ALT :
-			keyArray[8] = 0;
+			keyArray[8] = false;
 			break;
 		case KeyEvent.VK_SPACE :
-			keyArray[9] = 0;
+			keyArray[9] = false;
 			break;
 		default :
 			break;
