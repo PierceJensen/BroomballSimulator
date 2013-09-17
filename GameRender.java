@@ -60,6 +60,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	BufferedImage redPlayer;
 	BufferedImage blueActivePlayer;
 	BufferedImage redActivePlayer;
+	BufferedImage ballImage;
 	
 	Robot robot;
 	
@@ -67,6 +68,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	int[] playership;
 	int[] displayedUnit;
+	int[] ballArray;
 	
 	int[][] playerArray;
 	
@@ -201,7 +203,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		generator = new Random();
 		
-		generateField();
+		generateImages();
 		
 		keyArray = new boolean[keyArraySize];
 		
@@ -212,6 +214,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	private void networkTransmit() throws IOException{
 		//retrieve arrays
 		playerArray = recieveDataHandler.playerArray;
+		ballArray = recieveDataHandler.ballArray;
 	}
 	
 	private void renderThings(Graphics2D g){
@@ -234,9 +237,21 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 			
 			//draws the entity
 			g.drawImage(image, xform, null);
+			
+			//debug line
 			g.setColor(Color.RED);
 			g.drawLine(worldXToScreen(entity[0]), worldYToScreen(entity[1]), (int)worldXToScreen(entity[0] + cos(entity[2])*300), (int)worldYToScreen(entity[1] + sin(entity[2])*300));
 		}
+		
+		//ball draw
+		AffineTransform xform = new AffineTransform();
+		
+		xform.translate(worldXToScreen(ballArray[0]), worldYToScreen(ballArray[1]));
+		xform.scale(400/(255*magnification), 400/(255*magnification));
+		xform.translate(-(ballImage.getWidth(null))/2, -(ballImage.getHeight(null))/2);
+		
+		//draws the ball
+		g.drawImage(ballImage, xform, null);
 		
 		g.setColor(Color.RED);
 		g.drawString(mouseWorld.x + ", " + mouseWorld.y,  worldXToScreen(mouseWorld.x), worldYToScreen(mouseWorld.y));
@@ -277,7 +292,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		}
 	}
 	
-	private void generateField(){
+	private void generateImages(){//creates pre-built buffered images for the field and players
 		BufferedImage protoImage = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_3BYTE_BGR);
 		Graphics2D g = protoImage.createGraphics();
 		
@@ -394,10 +409,12 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		fieldImage = protoImage;
 		
-		final int PlayerSizeX=50;
-		final int PlayerSizeY=25;
+		//drawing player entities
+		
+		final int PlayerSizeX=25;
+		final int PlayerSizeY=40;
 		final int ActivePlayerBorder=5;
-		final int BallDiameter=5;
+		final int ballDiameter=15;
 		
 		BufferedImage BluePlayerTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
 		Graphics2D BPT = BluePlayerTemp.createGraphics();
@@ -405,6 +422,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		BPT.setColor(Color.BLUE);
 		
 		BPT.fillRect(0, 0, PlayerSizeX, PlayerSizeY);
+		
+		BPT.dispose();
 		bluePlayer = BluePlayerTemp;
 			
 		BufferedImage BluePlayerActiveTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
@@ -418,6 +437,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		BPAT.fillRect(ActivePlayerBorder, ActivePlayerBorder, PlayerSizeX-2*ActivePlayerBorder, PlayerSizeY-2*ActivePlayerBorder);
 		
+		BPAT.dispose();
 		blueActivePlayer = BluePlayerActiveTemp;
 		
 		BufferedImage RluePlayerTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
@@ -426,6 +446,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		RPT.setColor(Color.RED);
 		
 		RPT.fillRect(0, 0, PlayerSizeX, PlayerSizeY);
+		
+		RPT.dispose();
 		redPlayer = RluePlayerTemp;
 			
 		BufferedImage RedPlayerActiveTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
@@ -439,7 +461,17 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		RPAT.fillRect(ActivePlayerBorder, ActivePlayerBorder, PlayerSizeX-2*ActivePlayerBorder, PlayerSizeY-2*ActivePlayerBorder);
 		
+		RPAT.dispose();
 		redActivePlayer = RedPlayerActiveTemp;
+		
+		//drawing the ball
+		BufferedImage ballTemp = new BufferedImage(ballDiameter,ballDiameter, BufferedImage.TYPE_4BYTE_ABGR);
+		Graphics2D BT = ballTemp.createGraphics();
+		BT.setColor(Color.BLUE);
+		BT.fillArc(0, 0, ballDiameter, ballDiameter, 0, 360);
+		
+		BT.dispose();
+		ballImage = ballTemp;
 	}
 	
 	//translates a world coordinate into a screen coordinate with magnification factored in

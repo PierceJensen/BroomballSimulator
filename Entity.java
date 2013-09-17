@@ -47,7 +47,7 @@ public class Entity extends GameMechanics{
 	public void playerInit(){
 		this.linFriction = 100;
 		this.radFriction = 100;
-		this.size = 400;
+		this.size = 200;
 		this.type = 0;
 		this.maxRadSpeed = 100;
 		this.maxlinSpeed = 1000;

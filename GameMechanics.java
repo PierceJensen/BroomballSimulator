@@ -51,6 +51,7 @@ public class GameMechanics {
 	static int[][] playerArray;
 	
 	Entity ball;
+	int[] ballArray;
 	
 	public Random generator;
 	
@@ -99,16 +100,30 @@ public class GameMechanics {
 			tan[i] = sin[i]/cos[i];
 		}
 		
+		int[] playerStartX = {0, 1000, 2000, 1000, 0};
+		int[] playerStartY = {3200, 3200, 2750, 2300, 2300};
+		
 		//player init
 		for(int i=0; i<10; i++){
 			Entity player = new Entity();
-			player.x = 3000;
-			player.y = 1000 + i*500;
+			
+			//team specific init
+			if(i<5){
+				player.x = playerStartX[i];
+				player.y = playerStartY[i];
+			} else {
+				player.x = 6000 - playerStartX[i - 5];
+				player.y = playerStartY[i - 5];
+			}
+			
+			//general init
 			playerList.add(player);
 			player.playerInit();
 		}
 		
 		ball = new Entity();
+		ball.x = 3000;
+		ball.y = 2750;
 		ball.ballInit();
 	}//end initialization
 
@@ -130,7 +145,7 @@ public class GameMechanics {
 			
 			int[] entityArray = convertEntToArray(entity);
 			
-			double turnRate = 720;
+			double turnRate = 540;
 			
 			double bearingToTarget =  Math.toDegrees(Math.atan2(mouseY[i] - entity.y, mouseX[i] - entity.x));
 			bearingToTarget = angDisplacement(bearingToTarget, entity.bearing);
@@ -162,20 +177,40 @@ public class GameMechanics {
 		
 		ball.move(period);
 		
+		//now check for collisions
+		for(int i=0;i<11;i++){
+			for(int j=i;j<11;j++){
+				Entity entity1;
+				Entity entity2;
+				
+				if(i != 10){
+					entity1 = playerList.get(i);
+				} else {
+					entity1 = ball;
+				}
+				
+				if(j != 10){
+					entity2 = playerList.get(j);
+				} else {
+					entity2 = ball;
+				}
+				
+				//check for intersection
+				if(abs(entity1.x - entity2.x) < entity1.size+entity2.size && abs(entity1.y - entity2.y) < entity1.size + entity2.size){
+					twoBodyCollision(entity1, entity2);
+				}
+			}
+
+		}//end for loop 1
+		
 		/* building transmit array */
 		playerArray = new int[playerArrayList.size()][5];
 		for(int i=0; i<playerArrayList.size(); i++){
 			playerArray[i] = playerArrayList.get(i);
 		}
+		
+		ballArray = convertBallToArray(ball);
 	}
-	
-	public void collisionCheck(ArrayList<Entity> a){
-		for(int i = 0; i < a.size(); i++){
-			
-			Entity entity1 = a.get(i);
-
-		}//end for loop 1
-	}//end method
 	
 	//custom mathematical square function
 	double sqr(double i){
@@ -296,7 +331,7 @@ public class GameMechanics {
 		return ent;
 	}
 	
-	private int[] convertBallToAray(Entity e){
+	private int[] convertBallToArray(Entity e){
 		int[] ball = new int[3];
 		
 		ball[0] = (int) e.x;
@@ -359,6 +394,10 @@ public class GameMechanics {
 				
 				streams[i].writeDouble(time);
 				streams[i].writeObject(playerArray);
+				//write ball info
+				for (int j=0;j<ballArray.length;j++){
+					streams[i].writeInt(ballArray[j]);
+				}
 				
 				streams[i].flush();
 			} catch (Exception e) {
