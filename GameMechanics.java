@@ -179,7 +179,7 @@ public class GameMechanics {
 		
 		//now check for collisions
 		for(int i=0;i<11;i++){
-			for(int j=i;j<11;j++){
+			for(int j=i+1;j<11;j++){
 				Entity entity1;
 				Entity entity2;
 				
@@ -196,7 +196,7 @@ public class GameMechanics {
 				}
 				
 				//check for intersection
-				if(abs(entity1.x - entity2.x) < entity1.size+entity2.size && abs(entity1.y - entity2.y) < entity1.size + entity2.size){
+				if(sqr(entity1.x - entity2.x) + sqr(entity1.y - entity2.y) < sqr(entity1.size + entity2.size)){
 					twoBodyCollision(entity1, entity2);
 				}
 			}
@@ -297,19 +297,19 @@ public class GameMechanics {
 		double size1 = e1.size;
 		double size2 = e2.size;
 		
-		double theta = Math.toDegrees(Math.atan2(v2y - v1y, v2x - v1x));
+		double theta = Math.toDegrees(Math.atan2(y2 - y1, x2 - x1));
 		
 		double separation = Math.sqrt(sqr(x2 - x1) + sqr(y2 - y1));
 		
 		if(sqr(v1x) + sqr(v1y) >= sqr(v2x) + sqr(v2y)){
 			
-			e1.x = x1 + 2.0*cos((int)theta)*((size1+size2)/2 - separation);
-			e1.y = y1 + 2.0*sin((int)theta)*((size1+size2)/2 - separation);
+			e1.x = x1 - 1.0*cos((int)theta)*(size1+size2)/2;
+			e1.y = y1 - 1.0*sin((int)theta)*(size1+size2)/2;
 			
 		}else{
 			
-			e2.x = x2 -= 2.0*cos((int)theta)*((size1+size2)/2 - separation);
-			e2.y = y2 -= 2.0*sin((int)theta)*((size1+size2)/2 - separation);
+			e2.x = x2 - 1.0*cos((int)theta)*(size1+size2)/2;
+			e2.y = y2 - 1.0*sin((int)theta)*(size1+size2)/2;
 	
 		}
 		
