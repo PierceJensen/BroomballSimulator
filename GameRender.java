@@ -228,7 +228,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 			int[] entity = playerArray[i];
 			
 			AffineTransform xform = new AffineTransform();
-			Image image = imageIdToImage((int) (entity[3] + Math.floor(i/5)));
+			Image image = imageIdToImage((int) (entity[3] + Math.floor(i/5)), i);
 			
 			xform.translate(worldXToScreen(entity[0]), worldYToScreen(entity[1]));
 			xform.scale(400/(255*magnification), 400/(255*magnification));
@@ -413,8 +413,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		final int PlayerSizeX=25;
 		final int PlayerSizeY=40;
-		final int ActivePlayerBorder=5;
 		final int ballDiameter=15;
+		final int activeArcDiameter = 60;
 		
 		BufferedImage BluePlayerTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
 		Graphics2D BPT = BluePlayerTemp.createGraphics();
@@ -426,16 +426,20 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		BPT.dispose();
 		bluePlayer = BluePlayerTemp;
 			
-		BufferedImage BluePlayerActiveTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage BluePlayerActiveTemp = new BufferedImage(activeArcDiameter, activeArcDiameter, BufferedImage.TYPE_4BYTE_ABGR);
 		Graphics2D BPAT = BluePlayerActiveTemp.createGraphics();
 	
-		BPAT.setColor(Color.WHITE);
+		BPAT.setColor(Color.YELLOW);
 		
-		BPAT.fillRect(0, 0, PlayerSizeX, PlayerSizeY);
+		BPAT.fillArc(0,0,activeArcDiameter,activeArcDiameter,0,360);
 		
+		BPAT.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT, 0));
+		BPAT.fillArc((int)(activeArcDiameter*.0375), (int)(activeArcDiameter*.0375), (int)(activeArcDiameter*.925), (int)(activeArcDiameter*.925),0,360);
+		
+		BPAT.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		BPAT.setColor(Color.BLUE);
 		
-		BPAT.fillRect(ActivePlayerBorder, ActivePlayerBorder, PlayerSizeX-2*ActivePlayerBorder, PlayerSizeY-2*ActivePlayerBorder);
+		BPAT.fillRect((activeArcDiameter - PlayerSizeX)/2, (activeArcDiameter - PlayerSizeY)/2, PlayerSizeX, PlayerSizeY);
 		
 		BPAT.dispose();
 		blueActivePlayer = BluePlayerActiveTemp;
@@ -450,16 +454,20 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		RPT.dispose();
 		redPlayer = RluePlayerTemp;
 			
-		BufferedImage RedPlayerActiveTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage RedPlayerActiveTemp = new BufferedImage(activeArcDiameter, activeArcDiameter, BufferedImage.TYPE_4BYTE_ABGR);
 		Graphics2D RPAT = RedPlayerActiveTemp.createGraphics();
 	
-		RPAT.setColor(Color.WHITE);
+		RPAT.setColor(Color.YELLOW);
 		
-		RPAT.fillRect(0, 0, PlayerSizeX, PlayerSizeY);
+		RPAT.fillArc(0,0,activeArcDiameter,activeArcDiameter,0,360);
+
+		RPAT.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT, 0));
+		RPAT.fillArc((int)(activeArcDiameter*.0375), (int)(activeArcDiameter*.0375), (int)(activeArcDiameter*.925), (int)(activeArcDiameter*.925),0,360);
 		
+		RPAT.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		RPAT.setColor(Color.RED);
 		
-		RPAT.fillRect(ActivePlayerBorder, ActivePlayerBorder, PlayerSizeX-2*ActivePlayerBorder, PlayerSizeY-2*ActivePlayerBorder);
+		RPAT.fillRect((activeArcDiameter - PlayerSizeX)/2, (activeArcDiameter - PlayerSizeY)/2, PlayerSizeX, PlayerSizeY);
 		
 		RPAT.dispose();
 		redActivePlayer = RedPlayerActiveTemp;
@@ -668,12 +676,20 @@ public void mousePressed(MouseEvent e) {
 	@Override
 	public void keyTyped(KeyEvent e) {}
 	
-	Image imageIdToImage(int id){
+	Image imageIdToImage(int id, int player){
 		switch(id + faction){
 		case 1:
-			return bluePlayer;
+			if(player == playerNumber){
+				return blueActivePlayer;
+			}else{
+				return bluePlayer;
+			}
 		case 2:
-			return redPlayer;
+			if(player == playerNumber){
+				return redActivePlayer;
+			}else{
+				return redPlayer;
+			}
 		default:
 			System.out.println("returned null from imageIdToImage!");
 			return null;

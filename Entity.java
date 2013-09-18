@@ -18,6 +18,7 @@ public class Entity extends GameMechanics{
 	double maxlinSpeed;//maximum linear speed
 	
 	double walkForce;
+	double sideWalkForce;
 	
 	double bearing;//radial position
 	double radv; //radial velocity
@@ -34,8 +35,10 @@ public class Entity extends GameMechanics{
 	
 	int type;//playertype
 	int walkDirection;
+	int sideWalkDirection;
 	
 	boolean walking = false;
+	boolean sideWalking = false;
 	
 	Random generator;
 	
@@ -54,12 +57,14 @@ public class Entity extends GameMechanics{
 		this.mass = 5;
 		this.radInertia = 5;
 		this.walkForce = 5000;
+		this.sideWalkForce = 5000;
 	}
 	
 	public void ballInit(){
 		this.linFriction = 100;
 		this.radFriction = 0;
 		this.size = 41;
+		this.type = 1;
 		this.maxRadSpeed = 300;
 		this.maxlinSpeed = 125;
 		this.mass = 5;
@@ -80,10 +85,18 @@ public class Entity extends GameMechanics{
 			this.bearing += 360;
 		}
 		
-		//forward motion
-		if(this.walking && sqr(this.vx) + sqr(this.vy) < sqr(this.maxlinSpeed)){
-			this.ax += this.applyForceX(this.walkDirection*this.walkForce*period, this.bearing);
-			this.ay += this.applyForceY(this.walkDirection*this.walkForce*period, this.bearing);
+		if(sqr(this.vx) + sqr(this.vy) < sqr(this.maxlinSpeed)){
+			//forward motion
+			if(this.walking){
+				this.ax += this.applyForceX(this.walkDirection*this.walkForce*period, this.bearing);
+				this.ay += this.applyForceY(this.walkDirection*this.walkForce*period, this.bearing);
+			}
+			
+			//strafing
+			if(this.sideWalking){
+				this.ax += this.applyForceX(this.sideWalkDirection*this.sideWalkForce*period, this.bearing + 90);
+				this.ay += this.applyForceY(this.sideWalkDirection*this.sideWalkForce*period, this.bearing + 90);
+			}
 		}
 		
 		double theta = Math.toDegrees(Math.atan2(this.vy,this.vx));

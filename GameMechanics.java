@@ -159,11 +159,18 @@ public class GameMechanics {
 			}
 			
 			entity.walking = keyArray[i][KEY_W] | keyArray[i][KEY_S];
+			entity.sideWalking = keyArray[i][KEY_A] | keyArray[i][KEY_D];
 			
 			if(keyArray[i][KEY_W]){
 				entity.walkDirection = 1;
 			} else if(keyArray[i][KEY_S]){
 				entity.walkDirection = -1;
+			}
+			
+			if(keyArray[i][KEY_A]){
+				entity.sideWalkDirection = 1;
+			} else if(keyArray[i][KEY_D]){
+				entity.sideWalkDirection = -1;
 			}
 			
 			//updates every entity's position. also capable of removing the entity
@@ -301,15 +308,17 @@ public class GameMechanics {
 		
 		double separation = Math.sqrt(sqr(x2 - x1) + sqr(y2 - y1));
 		
+		double sepModifier = .095;
+		
 		if(sqr(v1x) + sqr(v1y) >= sqr(v2x) + sqr(v2y)){
 			
-			e1.x = x1 - 1.0*cos((int)theta)*(size1+size2)/2;
-			e1.y = y1 - 1.0*sin((int)theta)*(size1+size2)/2;
+			e1.x = x1 - sepModifier*cos((int)theta)*(size1+size2);
+			e1.y = y1 - sepModifier*sin((int)theta)*(size1+size2);
 			
 		}else{
 			
-			e2.x = x2 - 1.0*cos((int)theta)*(size1+size2)/2;
-			e2.y = y2 - 1.0*sin((int)theta)*(size1+size2)/2;
+			e2.x = x2 + sepModifier*cos((int)theta)*(size1+size2);
+			e2.y = y2 + sepModifier*sin((int)theta)*(size1+size2);
 	
 		}
 		
