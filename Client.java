@@ -66,7 +66,7 @@ public class Client extends Thread {
 				breakLoop = true;
 				break;
 			case 3 ://join game
-				joinGameMenu();
+				joinGame();
 			default :
 				break;
 			}
@@ -90,7 +90,7 @@ public class Client extends Thread {
 			Thread.sleep(1000);
 			
 			//initialize tcp connection
-			sock = new Socket("localhost", 1337);
+			sock = new Socket("localhost", 13337);
 			//set receive buffer size
 			sock.setReceiveBufferSize(512);
 			
@@ -122,12 +122,12 @@ public class Client extends Thread {
 		
 	}
 	
+private void joinGame(){
+		
+	}
+	
 	private int menu(){
 		MenuRender mainMenu = new MenuRender();
 		return mainMenu.menu(sm);
-	}
-	
-	private void joinGameMenu(){
-		
 	}
 }

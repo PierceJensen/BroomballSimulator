@@ -21,7 +21,7 @@ public class TcpListener implements Runnable{
 		Thread t = new Thread(this, "tcp listener");
 		
 		try{
-			servSock = new ServerSocket(1337);
+			servSock = new ServerSocket(13337);
 		} catch (Exception e){
 			e.printStackTrace();
 		}
