@@ -15,6 +15,9 @@ import javax.swing.SwingUtilities;
 public class GameRender implements MouseMotionListener, MouseListener, MouseWheelListener, KeyListener {
 	ScreenManager sm;
 	
+	final int RED_GOAL_RIGHT = -1;
+	final int BLUE_GOAL_RIGHT = 1;
+	
 	int screenWidth;
 	int screenHeight;
 	double mapheight;
@@ -51,6 +54,10 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	double chargeTime;
 	
+	double leftEdgeX;
+	double topEdgeY;
+	double fieldWidth;
+	
 	Point mouse;
 	Point center;
 	Point screenloc;
@@ -73,6 +80,10 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	int[] ballArray;
 	
 	int[][] playerArray;
+	
+	int blueScore = 0;
+	int redScore = 0;
+	int goalPosition;
 	
 	ClientStreamReader recieveDataHandler;
 	ObjectOutputStream sender;
@@ -219,12 +230,32 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		ballArray = recieveDataHandler.ballArray;
 		ballPossessor = recieveDataHandler.ballPossessor;
 		chargeTime = recieveDataHandler.chargeTime;
+		blueScore = recieveDataHandler.blueScore;
+		redScore = recieveDataHandler.redScore;
+		goalPosition = recieveDataHandler.goalPosition;
 	}
 	
 	private void renderThings(Graphics2D g){
 		g.clearRect(0,0,screenWidth,screenHeight);
 		
 		g.drawImage(fieldImage, 0, 0, null);
+		
+		int redPosition;
+		int bluePosition;
+		if(goalPosition == BLUE_GOAL_RIGHT){
+			redPosition = (int)worldXToScreen(leftEdgeX + fieldWidth*.9);
+			bluePosition = (int)worldXToScreen(leftEdgeX);
+		} else {
+			redPosition = (int)worldXToScreen(leftEdgeX + fieldWidth*.9);
+			bluePosition = (int)worldXToScreen(leftEdgeX);
+		}
+		
+		g.setFont(font1);
+		g.setColor(Color.RED);
+		g.drawString("Red Score:" + redScore, bluePosition, (int)(screenHeight*.025));
+		g.setColor(Color.BLUE);
+		g.drawString("Blue Score:" + blueScore, redPosition, (int)(screenHeight*.025));
+		g.setFont(font2);
 		
 		//entity draw loop
 		for(int i=0; i<playerArray.length; i++){
@@ -331,12 +362,12 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		g.setColor(Color.WHITE);
 		
 		//The base measurement
-		double fieldWidth = 8000;
+		fieldWidth = 8000;
 		double fieldHeight = fieldWidth*0.68;
 		
 		
-		double leftEdgeX = (mapwidth - fieldWidth)/2;
-		double topEdgeY = (mapheight + fieldHeight)/2;
+		leftEdgeX = (mapwidth - fieldWidth)/2;
+		topEdgeY = (mapheight + fieldHeight)/2;
 		
 		//MAIN RECTS
 		//base field rect

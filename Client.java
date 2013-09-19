@@ -59,12 +59,14 @@ public class Client extends Thread {
 			//menuRender is the next state, and returns which thing is clicked on
 			int nextState = menu();
 			switch (nextState){
-			case 1 :
+			case 1 ://new game
 				startGame();
 				break;
-			case 2 :
+			case 2 ://exit
 				breakLoop = true;
 				break;
+			case 3 ://join game
+				joinGameMenu();
 			default :
 				break;
 			}
@@ -123,5 +125,9 @@ public class Client extends Thread {
 	private int menu(){
 		MenuRender mainMenu = new MenuRender();
 		return mainMenu.menu(sm);
+	}
+	
+	private void joinGameMenu(){
+		
 	}
 }

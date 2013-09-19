@@ -17,6 +17,9 @@ public class ClientStreamReader implements Runnable {
 	public int[] ballArray;
 	public int ballPossessor;
 	public double chargeTime;
+	public int blueScore;
+	public int redScore;
+	public int goalPosition;
 	
 	public ClientStreamReader(ObjectInputStream in) {
 		inStream = in;
@@ -50,6 +53,9 @@ public class ClientStreamReader implements Runnable {
 					
 					ballPossessor = inStream.readInt();
 					chargeTime = inStream.readDouble();
+					redScore = inStream.readInt();
+					blueScore = inStream.readInt();
+					goalPosition = inStream.readInt();
 				}
 			} catch(Exception e){
 				e.printStackTrace();

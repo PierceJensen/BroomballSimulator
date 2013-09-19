@@ -7,8 +7,9 @@ import java.awt.event.*;
 public class MenuRender implements MouseMotionListener, MouseListener, MouseWheelListener, KeyListener {
 	ScreenManager sm;
 	
-	private static final int HOVER_START = 1;
-	private static final int HOVER_EXIT = 2;
+	private final int HOVER_START = 1;
+	private final int HOVER_EXIT = 2;
+	private final int HOVER_JOIN = 3;
 	
 	int buttonHovered;
 	
@@ -66,13 +67,20 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 				buttonHovered = HOVER_START;
 			}
 			g.drawString("Start Game", (int) (screenHeight*.1), (int) (screenHeight*.20));
-			if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.15 && mouse.y > screenHeight*.22 && mouse.y < screenHeight*.24){
+			
+			if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.15 && mouse.y > screenHeight*.26 && mouse.y < screenHeight*.28){
 				g.setColor(Color.YELLOW);
 				buttonHovered = HOVER_EXIT;
 			}else{
 				g.setColor(Color.WHITE);
 			}
-			g.drawString("Exit", (int) (screenHeight*.1), (int) (screenHeight*.24));
+			g.drawString("Exit", (int) (screenHeight*.1), (int) (screenHeight*.28));
+			
+			if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.21 && mouse.y > screenHeight*.22 && mouse.y < screenHeight*.24){
+				g.setColor(Color.YELLOW);
+				buttonHovered = HOVER_JOIN;
+			}
+			g.drawString("Join Game", (int) (screenHeight*.1), (int)(screenHeight*.24));
 			
 			g.setColor(Color.WHITE);
 			g.drawString("Pre-Alpha", (int) (screenWidth - screenHeight*.4), (int) (screenHeight*.20));

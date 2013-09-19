@@ -156,14 +156,38 @@ public class Entity extends GameMechanics{
 				this.vy = 0;
 			}
 		}
-		
+		//3430 2590
 		if(this.type == 1){//ball
 			if(this.x < leftBound + this.size){ //left-right map bound stopper
-				this.x = leftBound + this.size;
-				this.vx *= -1;
+				if(this.y < 3430-this.size && this.y > 2590+this.size){//if it's in a goal
+					if(goalPosition == BLUE_GOAL_RIGHT){
+						redScore += 1;
+					}else{
+						blueScore += 1;
+					}
+					this.x = 3000;
+					this.y = 2750;
+					this.vx = 0;
+					this.vy = 0;
+				} else {//if it's not in the goal
+					this.x = leftBound + this.size;
+					this.vx *= -.75;
+				}
 			}else if(this.x > rightBound - this.size){
-				this.x = rightBound - this.size;
-				this.vx *= -1;
+				if(this.y < 3430-this.size && this.y > 2590+this.size){
+					if(goalPosition == BLUE_GOAL_RIGHT){
+						blueScore += 1;
+					} else {
+						redScore += 1;
+					}
+					this.x = 3000;
+					this.y = 2750;
+					this.vx = 0;
+					this.vy = 0;
+				} else {
+					this.x = rightBound - this.size;
+					this.vx *= -.75;
+				}
 			}
 			
 			if(this.y > topBound - this.size){ //top-bottom map bound stopper

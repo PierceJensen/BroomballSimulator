@@ -29,6 +29,9 @@ public class GameMechanics {
 	private final int KEY_ALT = 8;
 	private final int KEY_SPACE = 9;
 	
+	public final int RED_GOAL_RIGHT = -1;
+	public final int BLUE_GOAL_RIGHT = 1;
+	
 	static int colCount = 0;
 	
 	public Point topLeftWaypoint;
@@ -45,6 +48,10 @@ public class GameMechanics {
 	
 	int mapheight = 6000;
 	int mapwidth = 8000;
+	
+	public static int blueScore;
+	public static int redScore;
+	public static int goalPosition;
 	
 	ArrayList<Entity> playerList;
 	ArrayList<int[]> playerArrayList;
@@ -185,21 +192,28 @@ public class GameMechanics {
 					if(abs(angDisplacement(bearingToTarget, entity.bearing)) < 90 && sqr(ball.x - entity.x) + sqr(ball.y - entity.y) < sqr(500)){
 						ballPossessor = i;
 					}
+				} else if(chargeTime > 0){
+					chargeCanceled = true;
+					chargeTime = 0;
 				}
 			}
 			
 			//if a player possesses the ball an left clicks, shoot it
 			if(keyArray[i][KEY_LMOUSE]){
-				if(ballPossessor == i){
+				if(ballPossessor == i && !chargeCanceled){
 					chargeTime += period;
 				}
-			} else if(ballPossessor == i && chargeTime > 0){
+			} else if(ballPossessor == i){//if the button is let go with a ball
+				if(chargeTime > 0){
 				ballPossessor = -1;
 				ball.x = entity.x + cos((int)entity.bearing)*300;
 				ball.y = entity.y + sin((int)entity.bearing)*300;
 				ball.vx = cos((int)entity.bearing)*4000*chargeTime;
 				ball.vy = sin((int)entity.bearing)*4000*chargeTime;
 				chargeTime = 0;
+				} else {
+					chargeCanceled = false;
+				}
 			}
 			
 			//updates every entity's position. also capable of removing the entity
@@ -442,6 +456,9 @@ public class GameMechanics {
 				}
 				streams[i].writeInt(ballPossessor);
 				streams[i].writeDouble(chargeTime);
+				streams[i].writeInt(blueScore);
+				streams[i].writeInt(redScore);
+				streams[i].writeInt(goalPosition);
 				
 				streams[i].flush();
 			} catch (Exception e) {
