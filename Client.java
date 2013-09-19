@@ -91,6 +91,7 @@ public class Client extends Thread {
 			
 			//initialize tcp connection
 			sock = new Socket("localhost", 13337);
+			System.out.println(sock.getInetAddress());
 			//set receive buffer size
 			sock.setReceiveBufferSize(512);
 			
@@ -122,8 +123,34 @@ public class Client extends Thread {
 		
 	}
 	
-private void joinGame(){
-		
+	private void joinGame(){
+		ObjectInputStream objInStream = null;
+		try{
+			//initialize tcp connection
+			sock = new Socket(MenuRender.IP, 13337);
+			//set receive buffer size
+			sock.setReceiveBufferSize(512);
+			
+			objInStream = new ObjectInputStream(sock.getInputStream());
+			
+			clientReader = new ClientStreamReader(objInStream);
+			clientSender = new ObjectOutputStream(sock.getOutputStream());
+			
+			
+			//renders game data
+			gameRender = new GameRender();
+			gameRender.gameRender(sm, clientReader, clientSender);//This is the render game loop!
+			
+			//END GAME CODE STARTS NOW//
+			
+			//end the reader
+			clientReader.running = false;
+			
+			//game close down code
+			sock.close();
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	private int menu(){

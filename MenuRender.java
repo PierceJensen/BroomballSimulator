@@ -28,7 +28,7 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 	Font font1;
 	Font font2;
 	
-	String IP;
+	public static String IP;
 	
 	int displayedMenu;
 	
@@ -142,7 +142,9 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 		if(displayedMenu == MENU_JOIN){//Ip entering code
 			
 			if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
-				IP = IP.substring(0, IP.length() - 1);
+				if(IP.length() > 0){
+					IP = IP.substring(0, IP.length() - 1);
+				}
 			} else {
 				IP += Character.toString(e.getKeyChar());
 			}
