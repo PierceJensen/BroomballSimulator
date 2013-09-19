@@ -61,6 +61,11 @@ public class GameMechanics {
 	int[] mouseY;
 	boolean[][] keyArray;
 	
+	int ballPossessor = -1;
+	double chargeTime;
+	
+	boolean chargeCanceled;
+	
 	//initialization
 	public void init(){
 		topLeftWaypoint = new Point();
@@ -173,6 +178,30 @@ public class GameMechanics {
 				entity.sideWalkDirection = -1;
 			}
 			
+			//if a player clicks the right button, checks if that player can possess the ball
+			if(keyArray[i][KEY_RMOUSE]){
+				if(ballPossessor == -1){
+					bearingToTarget =  Math.toDegrees(Math.atan2(ball.y - entity.y, ball.x - entity.x));
+					if(abs(angDisplacement(bearingToTarget, entity.bearing)) < 90 && sqr(ball.x - entity.x) + sqr(ball.y - entity.y) < sqr(500)){
+						ballPossessor = i;
+					}
+				}
+			}
+			
+			//if a player possesses the ball an left clicks, shoot it
+			if(keyArray[i][KEY_LMOUSE]){
+				if(ballPossessor == i){
+					chargeTime += period;
+				}
+			} else if(ballPossessor == i && chargeTime > 0){
+				ballPossessor = -1;
+				ball.x = entity.x + cos((int)entity.bearing)*300;
+				ball.y = entity.y + sin((int)entity.bearing)*300;
+				ball.vx = cos((int)entity.bearing)*4000*chargeTime;
+				ball.vy = sin((int)entity.bearing)*4000*chargeTime;
+				chargeTime = 0;
+			}
+			
 			//updates every entity's position. also capable of removing the entity
 			if(entity.move(period)){
 				operateEntityList(AL_REMOVE, i, null);
@@ -182,7 +211,9 @@ public class GameMechanics {
 			}
 		}//end entity loop
 		
-		ball.move(period);
+		if(ballPossessor == -1){
+			ball.move(period);
+		}
 		
 		//now check for collisions
 		for(int i=0;i<11;i++){
@@ -193,12 +224,14 @@ public class GameMechanics {
 				if(i != 10){
 					entity1 = playerList.get(i);
 				} else {
+					if(ballPossessor != -1) continue;
 					entity1 = ball;
 				}
 				
 				if(j != 10){
 					entity2 = playerList.get(j);
 				} else {
+					if(ballPossessor != -1) continue;
 					entity2 = ball;
 				}
 				
@@ -407,6 +440,8 @@ public class GameMechanics {
 				for (int j=0;j<ballArray.length;j++){
 					streams[i].writeInt(ballArray[j]);
 				}
+				streams[i].writeInt(ballPossessor);
+				streams[i].writeDouble(chargeTime);
 				
 				streams[i].flush();
 			} catch (Exception e) {

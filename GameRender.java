@@ -49,6 +49,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	double screenXFactor = 1;
 	double screenYFactor = 1;
 	
+	double chargeTime;
+	
 	Point mouse;
 	Point center;
 	Point screenloc;
@@ -65,7 +67,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	Robot robot;
 	
 	Random generator;
-	
+	int ballPossessor;
 	int[] playership;
 	int[] displayedUnit;
 	int[] ballArray;
@@ -215,6 +217,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		//retrieve arrays
 		playerArray = recieveDataHandler.playerArray;
 		ballArray = recieveDataHandler.ballArray;
+		ballPossessor = recieveDataHandler.ballPossessor;
+		chargeTime = recieveDataHandler.chargeTime;
 	}
 	
 	private void renderThings(Graphics2D g){
@@ -241,17 +245,45 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 			//debug line
 			g.setColor(Color.RED);
 			g.drawLine(worldXToScreen(entity[0]), worldYToScreen(entity[1]), (int)worldXToScreen(entity[0] + cos(entity[2])*300), (int)worldYToScreen(entity[1] + sin(entity[2])*300));
+			
+			//if you possess the ball, draw it attached to you
+			if(ballPossessor == i) {
+				xform = new AffineTransform();
+				
+				xform.translate(worldXToScreen(entity[0] + cos(entity[2])*300), worldYToScreen(entity[1] + sin(entity[2])*300));
+				xform.scale(400/(255*magnification), 400/(255*magnification));
+				xform.translate(-(ballImage.getWidth(null))/2, -(ballImage.getHeight(null))/2);
+				
+				//draws the ball
+				g.drawImage(ballImage, xform, null);
+				
+				//if you're charging a shot, draw the meter
+				if(chargeTime > 0){
+					int meterDiameter = (int) (2000*screenYFactor);
+					BufferedImage meterImage = new BufferedImage(meterDiameter, meterDiameter, BufferedImage.TYPE_4BYTE_ABGR);
+					
+					Graphics2D mI = meterImage.createGraphics();
+					mI.setColor(Color.CYAN);
+					mI.fillArc(0, 0, meterDiameter/2, meterDiameter/2, entity[2] - 45, (int) (90*chargeTime));
+					mI.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT, 0));
+					mI.fillArc((int)(meterDiameter*.05), (int)(meterDiameter*.05), (int)(meterDiameter*.4), (int)(meterDiameter*.4), entity[2] - 45, (int)(90*chargeTime)); 
+					
+					g.drawImage(meterImage, worldXToScreen(entity[0]) - meterDiameter/2, worldYToScreen(entity[1]) - meterDiameter/2, null);
+					
+				}
+			}
 		}
 		
-		//ball draw
-		AffineTransform xform = new AffineTransform();
-		
-		xform.translate(worldXToScreen(ballArray[0]), worldYToScreen(ballArray[1]));
-		xform.scale(400/(255*magnification), 400/(255*magnification));
-		xform.translate(-(ballImage.getWidth(null))/2, -(ballImage.getHeight(null))/2);
-		
-		//draws the ball
-		g.drawImage(ballImage, xform, null);
+		if(ballPossessor == -1){//ball draw
+			AffineTransform xform = new AffineTransform();
+			
+			xform.translate(worldXToScreen(ballArray[0]), worldYToScreen(ballArray[1]));
+			xform.scale(400/(255*magnification), 400/(255*magnification));
+			xform.translate(-(ballImage.getWidth(null))/2, -(ballImage.getHeight(null))/2);
+			
+			//draws the ball
+			g.drawImage(ballImage, xform, null);
+		}
 		
 		g.setColor(Color.RED);
 		g.drawString(mouseWorld.x + ", " + mouseWorld.y,  worldXToScreen(mouseWorld.x), worldYToScreen(mouseWorld.y));
@@ -570,6 +602,11 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	//mouse listener methods
 	public void mouseDragged(MouseEvent e){
+		mouse.x = e.getX();
+		mouse.y = e.getY();
+		
+		mouseWorld.x = (int) screenXToWorld(mouse.x);
+		mouseWorld.y = (int) screenYToWorld(mouse.y);
 	}
 
 	public synchronized void mouseMoved(MouseEvent e){

@@ -48,7 +48,7 @@ public class Entity extends GameMechanics{
 
 	//ship and structure initialization
 	public void playerInit(){
-		this.linFriction = 100;
+		this.linFriction = 500;
 		this.radFriction = 100;
 		this.size = 200;
 		this.type = 0;
@@ -61,12 +61,12 @@ public class Entity extends GameMechanics{
 	}
 	
 	public void ballInit(){
-		this.linFriction = 100;
+		this.linFriction = 500;
 		this.radFriction = 0;
 		this.size = 41;
 		this.type = 1;
 		this.maxRadSpeed = 300;
-		this.maxlinSpeed = 125;
+		this.maxlinSpeed = 10000;
 		this.mass = 5;
 		this.radInertia = 5;
 	}
@@ -139,17 +139,39 @@ public class Entity extends GameMechanics{
 		int bottomBound = 280;
 		int rightBound = 7000;
 		
-		if(this.type == 0 || this.type == 1){
+		if(this.type == 0){//player
 			if(this.x < leftBound + this.size){ //left-right map bound stopper
 				this.x = leftBound + this.size;
+				this.vx = 0;
 			}else if(this.x > rightBound - this.size){
 				this.x = rightBound - this.size;
+				this.vx = 0;
 			}
 			
 			if(this.y > topBound - this.size){ //top-bottom map bound stopper
 				this.y = topBound - this.size;
+				this.vy = 0;
 			}else if(this.y < bottomBound + this.size){
 				this.y = bottomBound + this.size;
+				this.vy = 0;
+			}
+		}
+		
+		if(this.type == 1){//ball
+			if(this.x < leftBound + this.size){ //left-right map bound stopper
+				this.x = leftBound + this.size;
+				this.vx *= -1;
+			}else if(this.x > rightBound - this.size){
+				this.x = rightBound - this.size;
+				this.vx *= -1;
+			}
+			
+			if(this.y > topBound - this.size){ //top-bottom map bound stopper
+				this.y = topBound - this.size;
+				this.vy *= -1;
+			}else if(this.y < bottomBound + this.size){
+				this.y = bottomBound + this.size;
+				this.vy *= -1;
 			}
 		}
 		
