@@ -82,22 +82,22 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 				g.drawRect((int) (screenHeight*.1), (int) (screenHeight*.22), (int) (screenHeight*.2), (int) (screenHeight*.04));
 				g.drawString(IP + "_", (int) (screenHeight*.11), (int) (screenHeight*.24));
 				
-				if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.15 && mouse.y > screenHeight*.32 && mouse.y < screenHeight*.36){
+				if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.15 && mouse.y > screenHeight*.28 && mouse.y < screenHeight*.30){
 					g.setColor(Color.YELLOW);
 					buttonHovered = HOVER_JOINCONNECT;
 				} else {
 					g.setColor(Color.WHITE);
 				}
-				g.drawString("Connect", (int) (screenHeight*.1), (int) (screenHeight*.35));
+				g.drawString("Connect", (int) (screenHeight*.1), (int) (screenHeight*.30));
 				
 				//back button
-				if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.15 && mouse.y > screenHeight*.26 && mouse.y < screenHeight*.30){
+				if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.15 && mouse.y > screenHeight*.34 && mouse.y < screenHeight*.36){
 					g.setColor(Color.YELLOW);
 					buttonHovered = HOVER_JOINBACK;
 				} else {
 					g.setColor(Color.WHITE);
 				}
-				g.drawString("Back", (int) (screenHeight*.1), (int) (screenHeight*.30));
+				g.drawString("Back", (int) (screenHeight*.1), (int) (screenHeight*.36));
 				
 			} else if(displayedMenu == MENU_MAIN){//the main game menu
 				g.setFont(font1);
