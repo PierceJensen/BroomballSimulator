@@ -10,6 +10,7 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 	private final int HOVER_START = 1;
 	private final int HOVER_EXIT = 2;
 	private final int HOVER_JOINMENU = 3;
+	private final int HOVER_JOINBACK = 4;
 	
 	private final int MENU_MAIN = 0;
 	private final int MENU_JOIN = 1;
@@ -52,6 +53,8 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 		w.addMouseWheelListener(this);
 		w.addKeyListener(this);
 		
+		IP = new String();
+		
 		running = true;
 	}
 	
@@ -68,14 +71,26 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 			
 			buttonHovered = 0;
 			
-			if(displayedMenu == 1){
+			if(displayedMenu == MENU_JOIN){//the "join game menu"
 				g.setFont(font2);
 				g.drawString("JOIN GAME", (int) (screenWidth - screenHeight*.5), (int) (screenHeight*.17));
 				
+				//ip address entry field
 				g.setFont(font1);
-				g.drawString("IP Addresss", (int) (screenHeight*.1), (int) (screenHeight*.20));
+				g.drawString("Enter the IP Address:", (int) (screenHeight*.1), (int) (screenHeight*.20));
 				g.drawRect((int) (screenHeight*.1), (int) (screenHeight*.22), (int) (screenHeight*.2), (int) (screenHeight*.04));
-			} else if(displayedMenu == 0){
+				g.drawString(IP + "_", (int) (screenHeight*.11), (int) (screenHeight*.24));
+				
+				//back button
+				if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.15 && mouse.y > screenHeight*.26 && mouse.y < screenHeight*.30){
+					g.setColor(Color.YELLOW);
+					buttonHovered = HOVER_JOINBACK;
+				} else {
+					g.setColor(Color.WHITE);
+				}
+				g.drawString("Back", (int) (screenHeight*.1), (int) (screenHeight*.30));
+				
+			} else if(displayedMenu == MENU_MAIN){//the main game menu
 				g.setFont(font1);
 				if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.21 && mouse.y > screenHeight*.18 && mouse.y < screenHeight*.20){
 					g.setColor(Color.YELLOW);
@@ -122,7 +137,17 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 	}
 	
 	
-	public void keyPressed(KeyEvent e) {}
+	public void keyPressed(KeyEvent e) {
+		
+		if(displayedMenu == MENU_JOIN){//Ip entering code
+			
+			if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+				IP = IP.substring(0, IP.length() - 1);
+			} else {
+				IP += Character.toString(e.getKeyChar());
+			}
+		}
+	}
 	public void keyReleased(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
 	public void mouseWheelMoved(MouseWheelEvent e) {}
@@ -133,7 +158,10 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 		returnValue = buttonHovered;
 		if(returnValue != 0){
 			if(returnValue == HOVER_JOINMENU){
-				displayedMenu = 1;
+				displayedMenu = MENU_JOIN;
+				IP = "";
+			} else if(returnValue == HOVER_JOINBACK){
+				displayedMenu = MENU_MAIN;
 			}else{
 			running = false;
 			}
