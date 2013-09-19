@@ -65,7 +65,7 @@ public class Client extends Thread {
 			case 2 ://exit
 				breakLoop = true;
 				break;
-			case 3 ://join game
+			case 5 ://join game
 				joinGame();
 			default :
 				break;
