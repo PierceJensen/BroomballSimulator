@@ -76,13 +76,13 @@ public class TcpListener implements Runnable{
 				
 				return;
 			}
-			
-			try{
-				sock.close();
-			} catch (Exception e){
-				e.printStackTrace();
-			}
-			System.out.println("connection refused; max clients reached");
 		}
+		
+		try{
+			sock.close();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		System.out.println("connection refused; max clients reached");
 	}
 }
