@@ -33,6 +33,8 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	int displayedMenu;
 	
+	boolean ranInit;
+	
 	private void init(){
 		mouse = new Point();
 		
@@ -56,13 +58,24 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		IP = new String();
 		
-		running = true;
+		ranInit = true;
 	}
 	
-	public int menu(ScreenManager screenmanager){
+	public int menu(ScreenManager screenmanager, int errorCode){
 		sm = screenmanager;
+		if(!ranInit){
+			init();
+		}
 		
-		init();
+		running = true;
+		
+		switch(errorCode){
+		case 1 :
+			displayedMenu = MENU_JOIN;
+			break;
+		default :
+			break;
+		}
 		
 		while(running){
 			Graphics2D g = sm.getGraphics();
@@ -79,7 +92,7 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 				//ip address entry field
 				g.setFont(font1);
 				g.drawString("Enter the IP Address:", (int) (screenHeight*.1), (int) (screenHeight*.20));
-				g.drawRect((int) (screenHeight*.1), (int) (screenHeight*.22), (int) (screenHeight*.2), (int) (screenHeight*.04));
+				g.drawRect((int) (screenHeight*.1), (int) (screenHeight*.2125), (int) (screenHeight*.21), (int) (screenHeight*.04));
 				g.drawString(IP + "_", (int) (screenHeight*.11), (int) (screenHeight*.24));
 				
 				if(mouse.x > screenHeight*.1 && mouse.x < screenHeight*.15 && mouse.y > screenHeight*.28 && mouse.y < screenHeight*.30){
@@ -142,6 +155,8 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 			}
 		}
 		
+		
+		
 		return returnValue;
 	}
 	
@@ -154,7 +169,9 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 				if(IP.length() > 0){
 					IP = IP.substring(0, IP.length() - 1);
 				}
-			} else {
+			} else if (((e.getKeyChar() >= 48 && e.getKeyChar() <= 57)
+					|| (e.getKeyChar() == 46))
+					&& IP.length() < 15){
 				IP += Character.toString(e.getKeyChar());
 			}
 		}
@@ -170,7 +187,6 @@ public class MenuRender implements MouseMotionListener, MouseListener, MouseWhee
 		if(returnValue != 0){
 			if(returnValue == HOVER_JOINMENU){
 				displayedMenu = MENU_JOIN;
-				IP = "";
 			} else if(returnValue == HOVER_JOINBACK){
 				displayedMenu = MENU_MAIN;
 			}else if(returnValue == HOVER_JOINCONNECT){

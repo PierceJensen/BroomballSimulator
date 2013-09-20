@@ -19,6 +19,9 @@ public class Client extends Thread {
 	ClientStreamReader clientReader;
 	ObjectOutputStream clientSender;
 	
+	private int errorCode;
+	private final int JOIN_UNKNOWNHOST = 1; 
+	
 	Socket sock;
 	
 	private static DisplayMode modes[] = {
@@ -55,9 +58,10 @@ public class Client extends Thread {
 	
 	private void clientLoop(){
 		boolean breakLoop = false;
+		MenuRender mainMenu = new MenuRender();
 		while(true){
 			//menuRender is the next state, and returns which thing is clicked on
-			int nextState = menu();
+			int nextState = mainMenu.menu(sm, errorCode);
 			switch (nextState){
 			case 1 ://new game
 				startGame();
@@ -66,7 +70,7 @@ public class Client extends Thread {
 				breakLoop = true;
 				break;
 			case 5 ://join game
-				joinGame();
+				joinGame(mainMenu);
 			default :
 				break;
 			}
@@ -123,11 +127,11 @@ public class Client extends Thread {
 		
 	}
 	
-	private void joinGame(){
+	private void joinGame(MenuRender menu){
 		ObjectInputStream objInStream = null;
 		try{
 			//initialize tcp connection
-			sock = new Socket(MenuRender.IP, 13337);
+			sock = new Socket(menu.IP, 13337);
 			//set receive buffer size
 			sock.setReceiveBufferSize(512);
 			
@@ -149,12 +153,11 @@ public class Client extends Thread {
 			//game close down code
 			sock.close();
 		} catch(Exception e){
-			e.printStackTrace();
+			if(e instanceof UnknownHostException){
+				errorCode = JOIN_UNKNOWNHOST;
+			}else{
+				e.printStackTrace();
+			}
 		}
-	}
-	
-	private int menu(){
-		MenuRender mainMenu = new MenuRender();
-		return mainMenu.menu(sm);
 	}
 }
