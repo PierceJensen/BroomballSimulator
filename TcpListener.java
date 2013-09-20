@@ -74,15 +74,16 @@ public class TcpListener implements Runnable{
 					e.printStackTrace();
 				}
 				
+				try{
+					sock.close();
+				} catch (Exception e){
+					e.printStackTrace();
+				}
+				
 				return;
 			}
-			
-			try{
-				sock.close();
-			} catch (Exception e){
-				e.printStackTrace();
-			}
-			System.out.println("connection refused; max clients reached");
 		}
+		
+		System.out.println("connection refused; max clients reached");
 	}
 }
