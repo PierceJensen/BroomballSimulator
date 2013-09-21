@@ -295,10 +295,10 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 					
 					Graphics2D mI = meterImage.createGraphics();
 					mI.setColor(Color.getHSBColor((float)(1-(chargeTime/5))/3, 1, 1));
-					mI.fillArc(0, 0, meterDiameter, meterDiameter, 90 , (int) (90*chargeTime));
+					mI.fillArc(0, 0, meterDiameter, meterDiameter, 90 ,(int)(360*(chargeTime/5)));
 									
 					mI.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT, 0));
-					final double METER_INNER_DIAMETER_MULTIPLER=0.3;
+					final double METER_INNER_DIAMETER_MULTIPLER=0.2;
 					mI.fillArc((int)(meterDiameter*METER_INNER_DIAMETER_MULTIPLER)/2, (int)(meterDiameter*METER_INNER_DIAMETER_MULTIPLER)/2, (int)(meterDiameter*(1-METER_INNER_DIAMETER_MULTIPLER)), (int)(meterDiameter*(1-METER_INNER_DIAMETER_MULTIPLER)),0,360); 
 				
 					g.drawImage(meterImage, worldXToScreen(entity[0])-meterDiameter/2 , worldYToScreen(entity[1]) -meterDiameter/2, null);
@@ -480,7 +480,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		final int PlayerSizeY=40;
 		final int ballDiameter=15;
 		final int activeArcDiameter = 60;
-		
+		final double ACTIVE_INNER_DIAMETER_MULTIPLER = .1;
 		BufferedImage BluePlayerTemp = new BufferedImage(PlayerSizeX, PlayerSizeY, BufferedImage.TYPE_3BYTE_BGR);
 		Graphics2D BPT = BluePlayerTemp.createGraphics();
 	
@@ -499,7 +499,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		BPAT.fillArc(0,0,activeArcDiameter,activeArcDiameter,0,360);
 		
 		BPAT.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT, 0));
-		BPAT.fillArc((int)(activeArcDiameter*.0375), (int)(activeArcDiameter*.0375), (int)(activeArcDiameter*.925), (int)(activeArcDiameter*.925),0,360);
+		BPAT.fillArc((int)(activeArcDiameter*ACTIVE_INNER_DIAMETER_MULTIPLER)/2, (int)(activeArcDiameter*ACTIVE_INNER_DIAMETER_MULTIPLER)/2, (int)(activeArcDiameter*(1-ACTIVE_INNER_DIAMETER_MULTIPLER)), (int)(activeArcDiameter*(1-ACTIVE_INNER_DIAMETER_MULTIPLER)),0,360);
 		
 		BPAT.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		BPAT.setColor(Color.BLUE);
@@ -527,7 +527,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		RPAT.fillArc(0,0,activeArcDiameter,activeArcDiameter,0,360);
 
 		RPAT.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT, 0));
-		RPAT.fillArc((int)(activeArcDiameter*.0375), (int)(activeArcDiameter*.0375), (int)(activeArcDiameter*.925), (int)(activeArcDiameter*.925),0,360);
+		RPAT.fillArc((int)(activeArcDiameter*ACTIVE_INNER_DIAMETER_MULTIPLER)/2, (int)(activeArcDiameter*ACTIVE_INNER_DIAMETER_MULTIPLER)/2, (int)(activeArcDiameter*(1-ACTIVE_INNER_DIAMETER_MULTIPLER)), (int)(activeArcDiameter*(1-ACTIVE_INNER_DIAMETER_MULTIPLER)),0,360);
 		
 		RPAT.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		RPAT.setColor(Color.RED);
