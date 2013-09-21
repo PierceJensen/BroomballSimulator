@@ -296,14 +296,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 					Graphics2D mI = meterImage.createGraphics();
 					mI.setColor(Color.getHSBColor((float)(1-(chargeTime/5))/3, 1, 1));
 					mI.fillArc(0, 0, meterDiameter, meterDiameter, 90 , (int) (90*chargeTime));
-					mI.fillArc(0, 0, 5, 5, 0 , 360);
-					mI.fillArc(meterDiameter/2, 0, 5, 5, 0 , 360);
-					mI.fillArc( 0,meterDiameter/2, 5, 5, 0 , 360);
-					mI.fillArc(meterDiameter/4, 0, 5, 5, 0 , 360);
-					mI.fillArc( 0,meterDiameter/4, 5, 5, 0 , 360);
-					mI.fillArc(3*meterDiameter/4, 0, 5, 5, 0 , 360);
-					mI.fillArc( 0,3*meterDiameter/4, 5, 5, 0 , 360);
-					
+									
 					mI.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT, 0));
 					final double METER_INNER_DIAMETER_MULTIPLER=0.3;
 					mI.fillArc((int)(meterDiameter*METER_INNER_DIAMETER_MULTIPLER)/2, (int)(meterDiameter*METER_INNER_DIAMETER_MULTIPLER)/2, (int)(meterDiameter*(1-METER_INNER_DIAMETER_MULTIPLER)), (int)(meterDiameter*(1-METER_INNER_DIAMETER_MULTIPLER)),0,360); 
