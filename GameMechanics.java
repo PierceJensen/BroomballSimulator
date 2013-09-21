@@ -75,19 +75,7 @@ public class GameMechanics {
 	
 	//initialization
 	public void init(){
-		topLeftWaypoint = new Point();
-		topLeftWaypoint.x = 200;
-		topLeftWaypoint.y = mapheight - 200;
-		bottomRightWaypoint = new Point();
-		bottomRightWaypoint.x = mapwidth - 200;
-		bottomRightWaypoint.y = 200;
-		base1Waypoint = new Point();
-		base1Waypoint.x = 200;
-		base1Waypoint.y = 200;
-		base2Waypoint = new Point();
-		base2Waypoint.x = mapwidth - 200;
-		base2Waypoint.y = mapheight - 200;
-		
+	
 		generator = new Random();
 		
 		playerList = new ArrayList<Entity>();
@@ -200,7 +188,7 @@ public class GameMechanics {
 			
 			//if a player possesses the ball an left clicks, shoot it
 			if(keyArray[i][KEY_LMOUSE]){
-				if(ballPossessor == i && !chargeCanceled){
+				if(ballPossessor == i && !chargeCanceled &&chargeTime<5){
 					chargeTime += period;
 				}
 			} else if(ballPossessor == i){//if the button is let go with a ball
@@ -384,6 +372,7 @@ public class GameMechanics {
 		ent[1] = (int) e.y;
 		ent[2] = (int) e.bearing;
 		ent[3] = e.type;
+		ent[4] = (int) e.size;
 		return ent;
 	}
 	
