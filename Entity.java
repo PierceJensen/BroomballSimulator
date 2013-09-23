@@ -159,6 +159,58 @@ public class Entity extends GameMechanics{
 				this.y = bottomBound + this.size;
 				this.vy = 0;
 			}
+			//CORNER CONDITIONS
+			final double CORNER_POSITION_OFFSET_MULTIPLIER = .25*.7071;//NEEDS *.7071 FOR PROPER OPERATION
+double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
+			
+			if(this.y<(-this.x)+100+(.7071*this.size))//Bottom Left
+			{
+				if(this.vy<=-this.vx)
+				{
+					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+				}else{
+					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
+					
+				}
+				this.x+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
+				this.y+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
+			}
+			if(this.y>-(this.x)+11900+(.7071*this.size))//Top Right
+			{
+				
+			}
+			
+			if(this.y>(this.x)+5900-(.7071*this.size))//Top Left
+			{
+				if(this.vy>=-this.vx)
+				{
+					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+				}else{
+					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
+					
+				}
+				this.x+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
+				this.y-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
+			}
+			if( this.y<(this.x)-5900+(.7071*this.size))//Bottom Right
+			{
+				if(this.vy>=-this.vx)
+				{
+					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+				}else{
+					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
+					
+				}
+				this.x-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
+				this.y+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
+			}
+			
 		}
 		//3430 2590
 		if(this.type == 1){//ball
@@ -202,7 +254,7 @@ public class Entity extends GameMechanics{
 				this.vy *= -1;
 			}
 			//CORNER CONDITIONS
-			final double CORNER_POSITION_OFFSET_MULTIPLIER = 1.1*.7071;//NEEDS *.7071 FOR PROPER OPERATION
+			final double CORNER_POSITION_OFFSET_MULTIPLIER = 2*.7071;//NEEDS *.7071 FOR PROPER OPERATION
 			if(this.y<(-this.x)+100+(.7071*this.size))//Bottom Left
 			{
 				double temp= -(this.vx*BALL_ELASTICITY);
