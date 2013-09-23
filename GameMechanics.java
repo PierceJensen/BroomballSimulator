@@ -32,6 +32,8 @@ public class GameMechanics {
 	public final int RED_GOAL_RIGHT = -1;
 	public final int BLUE_GOAL_RIGHT = 1;
 	
+	static Polygon[] corner;
+	
 	static int colCount = 0;
 	
 	public Point topLeftWaypoint;
@@ -98,6 +100,17 @@ public class GameMechanics {
 		tan = new float[(90*trigScale) + 1];
 		for(int i=0;i<tan.length;i++){
 			tan[i] = sin[i]/cos[i];
+		}
+		
+		corner = new Polygon[4];
+		//ordered counter-clockwise, starting from top-right
+		int[][] cornerPointsX = {{7000,7000,6200},{-200,-1000,-1000},{-1000,-1000,-200},{6200,7000,7000}};
+		int[][] cornerPointsY = {{4920,5720,5720},{5720,5720,4920},{1080,280,280},{280,280,1080}};
+		for(int i=0;i<4;i++){
+			corner[i] = new Polygon();
+			corner[i].npoints = 3;
+			corner[i].xpoints = cornerPointsX[i];
+			corner[i].ypoints = cornerPointsY[i];
 		}
 		
 		int[] playerStartX = {0, 1000, 2000, 1000, 0};

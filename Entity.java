@@ -1,5 +1,6 @@
 //This class is the standard game thing type object, known as entities. This class
 //operates every function that is not affected by other entities. It is also used
+import java.awt.Polygon;
 //to define initial constants for each entity via each different init function
 //antoerh test comment
 import java.util.Random;
@@ -161,10 +162,53 @@ public class Entity extends GameMechanics{
 			}
 			//CORNER CONDITIONS
 			final double CORNER_POSITION_OFFSET_MULTIPLIER = .25*.7071;//NEEDS *.7071 FOR PROPER OPERATION
-double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
+			double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
 			
-			if(this.y<(-this.x)+100+(.7071*this.size))//Bottom Left
-			{
+			int containingCorner = 0;//numbered counter-clockwise from top right
+			
+			for(int i=0;i<4;i++){
+				if(corner[i].contains(this.x+this.size*cos((i+1)*45), this.y+this.size*sin((i+1)*45))){
+					containingCorner = i+1;
+					if(this.type == 0){
+						if(this.vy>=-this.vx)
+						{
+							this.vx= Math.pow(-1,(i+1))*vMag*Math.cos(Math.toRadians(45-this.bearing));
+							this.vy= Math.pow(-1,(i+1))*vMag*Math.cos(Math.toRadians(45-this.bearing));
+						}else{
+							this.vx= Math.pow(-1,(i))*vMag*Math.cos(Math.toRadians(45-this.bearing));
+							this.vy= Math.pow(-1,(i))*vMag*Math.cos(Math.toRadians(45-this.bearing));
+						}
+						
+						this.x+=sign(cos(i*90-45))*CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
+						this.y+=sign(sin(i*90-45))*CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
+					}
+					break;
+				}
+			}
+			
+			/*
+			switch(containingCorner){//if the ball intersects this corner, do this
+			case 1 ://top right
+				if(this.vy>=-this.vx)
+				{
+					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+				}else{
+					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
+				}
+				break;
+			case 2 ://top left
+				if(this.vy>=-this.vx)
+				{
+					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+				}else{
+					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
+				}
+				break;
+			case 3 ://bottom left
 				if(this.vy<=-this.vx)
 				{
 					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
@@ -172,8 +216,25 @@ double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
 				}else{
 					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
 					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
-					
 				}
+				break;
+			case 4 ://bottom right
+				if(this.vy>=-this.vx)
+				{
+					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
+				}else{
+					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
+					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
+				}
+				break;
+			default :
+				break;
+			}
+			
+			if(this.y<(-this.x)+100+(.7071*this.size))//Bottom Left
+			{
+				
 				this.x+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 				this.y+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 			}
@@ -184,33 +245,17 @@ double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
 			
 			if(this.y>(this.x)+5900-(.7071*this.size))//Top Left
 			{
-				if(this.vy>=-this.vx)
-				{
-					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-				}else{
-					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
-					
-				}
+				
 				this.x+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 				this.y-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 			}
 			if( this.y<(this.x)-5900+(.7071*this.size))//Bottom Right
 			{
-				if(this.vy>=-this.vx)
-				{
-					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-				}else{
-					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
-					
-				}
+				
 				this.x-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 				this.y+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 			}
-			
+			*/
 		}
 		//3430 2590
 		if(this.type == 1){//ball
