@@ -33,13 +33,14 @@ public class ServerDataListener implements Runnable {
 					if(streams[i].available() <= 0) continue;
 					 mouseX[i] = streams[i].readInt();
 					 mouseY[i] = streams[i].readInt();
-					 
+
 					 for(int j=0;j<keyArraySize;j++){
 						 keyArray[i][j] = streams[i].readBoolean();
 					 }
 					 
 				}catch(Exception e){
 					e.printStackTrace();
+					 System.out.println(i);
 				}
 				
 				

@@ -43,7 +43,7 @@ public class Entity extends GameMechanics{
 	
 	Random generator;
 	
-	private final double BALL_ELASTICITY=1;
+	private final double BALL_ELASTICITY=.35;
 	
 	Entity(){
 		generator = new Random();
@@ -161,7 +161,7 @@ public class Entity extends GameMechanics{
 				this.vy = 0;
 			}
 			//CORNER CONDITIONS
-			final double CORNER_POSITION_OFFSET_MULTIPLIER = .25*.7071;//NEEDS *.7071 FOR PROPER OPERATION
+	/*		final double CORNER_POSITION_OFFSET_MULTIPLIER = .25*.7071;//NEEDS *.7071 FOR PROPER OPERATION
 			double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
 			
 			int containingCorner = 0;//numbered counter-clockwise from top right
@@ -185,7 +185,7 @@ public class Entity extends GameMechanics{
 					break;
 				}
 			}
-			
+			*/
 			/*
 			switch(containingCorner){//if the ball intersects this corner, do this
 			case 1 ://top right
@@ -272,7 +272,7 @@ public class Entity extends GameMechanics{
 					this.vy = 0;
 				} else {//if it's not in the goal
 					this.x = leftBound + this.size;
-					this.vx *= -.75;
+					this.vx *= -BALL_ELASTICITY;
 				}
 			}else if(this.x > rightBound - this.size){
 				if(this.y < GOAL_TOP-this.size && this.y > GOAL_BOTTOM+this.size){
@@ -293,13 +293,13 @@ public class Entity extends GameMechanics{
 			
 			if(this.y > topBound - this.size){ //top-bottom map bound stopper
 				this.y = topBound - this.size;
-				this.vy *= -1;
+				this.vy *= -BALL_ELASTICITY;
 			}else if(this.y < bottomBound + this.size){
 				this.y = bottomBound + this.size;
-				this.vy *= -1;
+				this.vy *= -BALL_ELASTICITY;
 			}
 			//CORNER CONDITIONS
-			final double CORNER_POSITION_OFFSET_MULTIPLIER = 2*.7071;//NEEDS *.7071 FOR PROPER OPERATION
+		/*	final double CORNER_POSITION_OFFSET_MULTIPLIER = 2*.7071;//NEEDS *.7071 FOR PROPER OPERATION
 			if(this.y<(-this.x)+100+(.7071*this.size))//Bottom Left
 			{
 				double temp= -(this.vx*BALL_ELASTICITY);
@@ -334,6 +334,7 @@ public class Entity extends GameMechanics{
 				this.x-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 				this.y+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 			}
+			*/
 			
 		}
 		

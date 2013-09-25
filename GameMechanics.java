@@ -72,7 +72,8 @@ public class GameMechanics {
 	
 	int ballPossessor = -1;
 	double chargeTime;
-	
+	final static double maxChargeTime=1;
+	private final int chargeBaseForce=2000;
 	boolean chargeCanceled;
 	
 	//initialization
@@ -201,7 +202,7 @@ public class GameMechanics {
 			
 			//if a player possesses the ball an left clicks, shoot it
 			if(keyArray[i][KEY_LMOUSE]){
-				if(ballPossessor == i && !chargeCanceled &&chargeTime<5){
+				if(ballPossessor == i && !chargeCanceled &&chargeTime<maxChargeTime){
 					chargeTime += period;
 				}
 			} else if(ballPossessor == i){//if the button is let go with a ball
@@ -209,8 +210,9 @@ public class GameMechanics {
 				ballPossessor = -1;
 				ball.x = entity.x + cos((int)entity.bearing)*300;
 				ball.y = entity.y + sin((int)entity.bearing)*300;
-				ball.vx = cos((int)entity.bearing)*4000*chargeTime;
-				ball.vy = sin((int)entity.bearing)*4000*chargeTime;
+				double shootVel= chargeBaseForce*(-Math.pow(chargeTime*(2/maxChargeTime),4)+4*Math.pow(chargeTime*(2/maxChargeTime),2)-.25*chargeTime*(2/maxChargeTime)+1);
+				ball.vx = cos((int)entity.bearing)*shootVel;
+				ball.vy = sin((int)entity.bearing)*shootVel;
 				chargeTime = 0;
 				} else {
 					chargeCanceled = false;
