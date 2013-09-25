@@ -38,6 +38,8 @@ public class Entity extends GameMechanics{
 	int walkDirection;
 	int sideWalkDirection;
 	
+	int[] cornerIntercept = {};
+	
 	boolean walking = false;
 	boolean sideWalking = false;
 	
@@ -161,7 +163,6 @@ public class Entity extends GameMechanics{
 				this.vy = 0;
 			}
 			//CORNER CONDITIONS
-	/*		final double CORNER_POSITION_OFFSET_MULTIPLIER = .25*.7071;//NEEDS *.7071 FOR PROPER OPERATION
 			double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
 			
 			int containingCorner = 0;//numbered counter-clockwise from top right
@@ -169,23 +170,26 @@ public class Entity extends GameMechanics{
 			for(int i=0;i<4;i++){
 				if(corner[i].contains(this.x+this.size*cos((i+1)*45), this.y+this.size*sin((i+1)*45))){
 					containingCorner = i+1;
-					if(this.type == 0){
+					if(this.type == 3){
 						if(this.vy>=-this.vx)
 						{
-							this.vx= Math.pow(-1,(i+1))*vMag*Math.cos(Math.toRadians(45-this.bearing));
-							this.vy= Math.pow(-1,(i+1))*vMag*Math.cos(Math.toRadians(45-this.bearing));
+							this.vx= Math.pow(-1,(i+1))*vMag*cos((int) (45-this.bearing));
+							this.vy= Math.pow(-1,(i+1))*vMag*sin((int) (45-this.bearing));
 						}else{
-							this.vx= Math.pow(-1,(i))*vMag*Math.cos(Math.toRadians(45-this.bearing));
-							this.vy= Math.pow(-1,(i))*vMag*Math.cos(Math.toRadians(45-this.bearing));
+							this.vx= Math.pow(-1,(i))*vMag*cos((int) (45-this.bearing));
+							this.vy= Math.pow(-1,(i))*vMag*sin((int) (45-this.bearing));
 						}
-						
-						this.x+=sign(cos(i*90-45))*CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
-						this.y+=sign(sin(i*90-45))*CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 					}
+					
+					double penetration = Math.sqrt(sqr(this.x+this.size - cornerRefX[i]) + sqr(this.y+this.size - cornerRefY[i]));
+					
+					this.x-=cos((i+1)*45)*penetration;
+					this.y-=sin((i+1)*45)*penetration;
+					
 					break;
 				}
 			}
-			*/
+			
 			/*
 			switch(containingCorner){//if the ball intersects this corner, do this
 			case 1 ://top right
