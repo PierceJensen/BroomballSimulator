@@ -165,11 +165,8 @@ public class Entity extends GameMechanics{
 			//CORNER CONDITIONS
 			double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
 			
-			int containingCorner = 0;//numbered counter-clockwise from top right
-			
 			for(int i=0;i<4;i++){
-				if(corner[i].contains(this.x+this.size*cos((i+1)*45), this.y+this.size*sin((i+1)*45))){
-					containingCorner = i+1;
+				if(corner[i].contains(this.x+this.size*.5*cos((i+1)*45), this.y+this.size*.5*sin((i+1)*45))){
 					if(this.type == 3){
 						if(this.vy>=-this.vx)
 						{
@@ -181,10 +178,11 @@ public class Entity extends GameMechanics{
 						}
 					}
 					
-					double penetration = Math.sqrt(sqr(this.x+this.size - cornerRefX[i]) + sqr(this.y+this.size - cornerRefY[i]));
+					//double penetration = abs(cornerIntercept[i] -(/*x-coord*/this.y+this.size*.5*sin(45*(i+1)) - /*slope*/0.7071*Math.pow((-1),(i+1))*/*y-coord*/(this.x+this.size*.5*cos(45*(i+1)))))/*divided by sqrt(m^2+1)*//1.2247;
+					double adjustment = (this.size*1.2247+cornerIntercept[i])/(this.y - Math.pow(-1, i+1)*.7071*this.x);
 					
-					this.x-=cos((i+1)*45)*penetration;
-					this.y-=sin((i+1)*45)*penetration;
+					this.x*=adjustment;
+					this.y*=adjustment;
 					
 					break;
 				}
