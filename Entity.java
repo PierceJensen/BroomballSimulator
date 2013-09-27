@@ -38,7 +38,7 @@ public class Entity extends GameMechanics{
 	int walkDirection;
 	int sideWalkDirection;
 	
-	int[] cornerIntercept = {11900,5900,100,-5900};
+	final int[] cornerIntercept = {11900,5900,100,-5900};
 	
 	boolean walking = false;
 	boolean sideWalking = false;
@@ -145,6 +145,8 @@ public class Entity extends GameMechanics{
 		final int rightBound = 7000;
 		final int GOAL_TOP= 3430;
 		final int GOAL_BOTTOM= 2590;
+		final int GOAL_LEFT = -1440;
+		final int GOAL_RIGHT = 7420;
 		
 		if(this.type == 0){//player
 			if(this.x < leftBound + this.size){ //left-right map bound stopper
@@ -163,7 +165,7 @@ public class Entity extends GameMechanics{
 				this.vy = 0;
 			}
 			//CORNER CONDITIONS
-			double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
+		/*	double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
 			
 			int containingCorner = 0;//numbered counter-clockwise from top right
 			
@@ -188,7 +190,7 @@ public class Entity extends GameMechanics{
 					
 					break;
 				}
-			}
+			}*/
 			
 			/*
 			switch(containingCorner){//if the ball intersects this corner, do this
@@ -265,7 +267,14 @@ public class Entity extends GameMechanics{
 		if(this.type == 1){//ball
 			if(this.x < leftBound + this.size){ //left-right map bound stopper
 				if(this.y < GOAL_TOP-this.size && this.y > GOAL_BOTTOM+this.size){//if it's in a goal
-					if(goalPosition == BLUE_GOAL_RIGHT){
+					if(this.x<GOAL_LEFT-this.size)
+					{
+						this.x = GOAL_LEFT + this.size;
+						this.vx *= -BALL_ELASTICITY;
+						this.vy *= BALL_ELASTICITY;
+					}
+					
+					/*if(goalPosition == BLUE_GOAL_RIGHT){
 						redScore += 1;
 					}else{
 						blueScore += 1;
@@ -273,14 +282,15 @@ public class Entity extends GameMechanics{
 					this.x = 3000;
 					this.y = 2750;
 					this.vx = 0;
-					this.vy = 0;
+					this.vy = 0;*/
 				} else {//if it's not in the goal
 					this.x = leftBound + this.size;
 					this.vx *= -BALL_ELASTICITY;
+					this.vy *= BALL_ELASTICITY;
 				}
 			}else if(this.x > rightBound - this.size){
 				if(this.y < GOAL_TOP-this.size && this.y > GOAL_BOTTOM+this.size){
-					if(goalPosition == BLUE_GOAL_RIGHT){
+					/*if(goalPosition == BLUE_GOAL_RIGHT){
 						blueScore += 1;
 					} else {
 						redScore += 1;
@@ -288,19 +298,22 @@ public class Entity extends GameMechanics{
 					this.x = 3000;
 					this.y = 2750;
 					this.vx = 0;
-					this.vy = 0;
+					this.vy = 0;*/
 				} else {
 					this.x = rightBound - this.size;
 					this.vx *= -BALL_ELASTICITY;
+					this.vy *= BALL_ELASTICITY;
 				}
 			}
 			
 			if(this.y > topBound - this.size){ //top-bottom map bound stopper
 				this.y = topBound - this.size;
 				this.vy *= -BALL_ELASTICITY;
+				this.vx *= BALL_ELASTICITY;
 			}else if(this.y < bottomBound + this.size){
 				this.y = bottomBound + this.size;
 				this.vy *= -BALL_ELASTICITY;
+				this.vx *= BALL_ELASTICITY;
 			}
 			//CORNER CONDITIONS
 		/*	final double CORNER_POSITION_OFFSET_MULTIPLIER = 2*.7071;//NEEDS *.7071 FOR PROPER OPERATION

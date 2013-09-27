@@ -231,6 +231,14 @@ public class GameMechanics {
 		if(ballPossessor == -1){
 			ball.move(period);
 		}
+		/// RULE AREA ///
+		
+		
+		
+		
+		/// END RULE AREA ///
+		
+		
 		
 		//now check for collisions
 		for(int i=0;i<11;i++){
