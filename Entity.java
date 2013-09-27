@@ -38,7 +38,7 @@ public class Entity extends GameMechanics{
 	int walkDirection;
 	int sideWalkDirection;
 	
-	int[] cornerIntercept = {};
+	int[] cornerIntercept = {11900,5900,100,-5900};
 	
 	boolean walking = false;
 	boolean sideWalking = false;
