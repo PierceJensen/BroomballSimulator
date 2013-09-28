@@ -247,7 +247,7 @@ public class GameMechanics {
 		rightGoal.addPoint(7420, 2590);
 		rightGoal.addPoint(7420, 3430);
 
-		if(leftGoal.contains(ball.x+8*ball.size, ball.y))
+		if(leftGoal.contains(ball.x+2*ball.size, ball.y))
 		{
 			if(goalPosition == BLUE_GOAL_RIGHT){
 				redScore += 1;
@@ -258,7 +258,7 @@ public class GameMechanics {
 			ball.y = 2750;
 			ball.vx = 0;
 			ball.vy = 0;
-		}else if(rightGoal.contains(ball.x-8*ball.size, ball.y)){
+		}else if(rightGoal.contains(ball.x-2*ball.size, ball.y)){
 			if(goalPosition == BLUE_GOAL_RIGHT){
 				blueScore += 1;
 			}else{

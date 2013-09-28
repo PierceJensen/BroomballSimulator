@@ -182,17 +182,17 @@ public class Entity extends GameMechanics{
 					}
 					
 					//double penetration = abs(cornerIntercept[i] -(/*x-coord*/this.y+this.size*.5*sin(45*(i+1)) - /*slope*/0.7071*Math.pow((-1),(i+1))*/*y-coord*/(this.x+this.size*.5*cos(45*(i+1)))))/*divided by sqrt(m^2+1)*//1.2247;
-					double adjustment = (this.size*1.2247+cornerIntercept[i])/(this.y - Math.pow(-1, i+1)*.7071*this.x);
+					//double adjustment = (this.size*1.2247+cornerIntercept[i])/(this.y - Math.pow(-1, i+1)*.7071*this.x);
 					
-					}
-					/*		
->>>>>>> GoalCollisions
-					this.x*=adjustment;
-					this.y*=adjustment;
+				}
+							
+
+					//this.x*=adjustment;
+					//this.y*=adjustment;
 					
 					break;
-				}
-			}*/
+			}
+			
 			
 			/*
 			switch(containingCorner){//if the ball intersects this corner, do this
