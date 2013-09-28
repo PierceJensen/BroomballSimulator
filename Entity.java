@@ -167,11 +167,8 @@ public class Entity extends GameMechanics{
 			//CORNER CONDITIONS
 		/*	double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
 			
-			int containingCorner = 0;//numbered counter-clockwise from top right
-			
 			for(int i=0;i<4;i++){
-				if(corner[i].contains(this.x+this.size*cos((i+1)*45), this.y+this.size*sin((i+1)*45))){
-					containingCorner = i+1;
+				if(corner[i].contains(this.x+this.size*.5*cos((i+1)*45), this.y+this.size*.5*sin((i+1)*45))){
 					if(this.type == 3){
 						if(this.vy>=-this.vx)
 						{
@@ -181,12 +178,13 @@ public class Entity extends GameMechanics{
 							this.vx= Math.pow(-1,(i))*vMag*cos((int) (45-this.bearing));
 							this.vy= Math.pow(-1,(i))*vMag*sin((int) (45-this.bearing));
 						}
-					}
+					}*/
 					
-					double penetration = Math.sqrt(sqr(this.x+this.size - cornerRefX[i]) + sqr(this.y+this.size - cornerRefY[i]));
-					
-					this.x-=cos((i+1)*45)*penetration;
-					this.y-=sin((i+1)*45)*penetration;
+					//double penetration = abs(cornerIntercept[i] -(/*x-coord*/this.y+this.size*.5*sin(45*(i+1)) - /*slope*/0.7071*Math.pow((-1),(i+1))*/*y-coord*/(this.x+this.size*.5*cos(45*(i+1)))))/*divided by sqrt(m^2+1)*//1.2247;
+				//	double adjustment = (this.size*1.2247+cornerIntercept[i])/(this.y - Math.pow(-1, i+1)*.7071*this.x);
+			/*		
+					this.x*=adjustment;
+					this.y*=adjustment;
 					
 					break;
 				}
@@ -267,28 +265,20 @@ public class Entity extends GameMechanics{
 		if(this.type == 1){//ball
 			if(this.y>GOAL_BOTTOM && this.y<GOAL_TOP)
 			{
-			//LEFT GOAL
-				if(this.y+this.size>GOAL_TOP && this.x < leftBound){
+				//Top Goal Bound
+				if(this.y+this.size>GOAL_TOP && (this.x < leftBound ||this.x > rightBound)){
 					this.y = GOAL_TOP - this.size;
 					this.vy *= -BALL_ELASTICITY;
 					this.vx *= BALL_ELASTICITY;
-				}else if(this.y-this.size<GOAL_BOTTOM && this.x < leftBound){
+				}else if(this.y-this.size<GOAL_BOTTOM && (this.x < leftBound ||this.x > rightBound)){ //Bottom Goal Bound
 					this.y = GOAL_BOTTOM + this.size;
 					this.vy *= -BALL_ELASTICITY;
 					this.vx *= BALL_ELASTICITY;
-				}else if(this.x-this.size<GOAL_LEFT){
+				}else if(this.x-this.size<GOAL_LEFT){ //Left Goal Bound
 					this.x = GOAL_LEFT + this.size;
 					this.vx *= -BALL_ELASTICITY;
 					this.vy *= BALL_ELASTICITY;
-				}else if(this.y+this.size>GOAL_TOP && this.x > rightBound){ //RIGHT GOAL
-					this.y = GOAL_TOP - this.size;
-					this.vy *= -BALL_ELASTICITY;
-					this.vx *= BALL_ELASTICITY;
-				}else if(this.y-this.size<GOAL_BOTTOM && this.x > rightBound){
-					this.y = GOAL_BOTTOM + this.size;
-					this.vy *= -BALL_ELASTICITY;
-					this.vx *= BALL_ELASTICITY;
-				}else if(this.x+this.size>GOAL_RIGHT){
+				}else if(this.x+this.size>GOAL_RIGHT){ //Right Goal Bound
 					this.x = GOAL_RIGHT - this.size;
 					this.vx *= -BALL_ELASTICITY;
 					this.vy *= BALL_ELASTICITY;
@@ -296,39 +286,13 @@ public class Entity extends GameMechanics{
 			
 		}else{			
 			if(this.x < leftBound + this.size){ //left-right map bound stopper
-		/*		if(this.y < GOAL_TOP-this.size && this.y > GOAL_BOTTOM+this.size){//if it's in a goal
-					
-					
-					if(goalPosition == BLUE_GOAL_RIGHT){
-						redScore += 1;
-					}else{
-						blueScore += 1;
-					}
-					this.x = 3000;
-					this.y = 2750;
-					this.vx = 0;
-					this.vy = 0;
-				} else {//if it's not in the goal*/
 					this.x = leftBound + this.size;
 					this.vx *= -BALL_ELASTICITY;
 					this.vy *= BALL_ELASTICITY;
-		//		}
 			}else if(this.x > rightBound - this.size){ //RIGHT SIDE
-		/*		if(this.y < GOAL_TOP-this.size && this.y > GOAL_BOTTOM+this.size){
-					if(goalPosition == BLUE_GOAL_RIGHT){
-						blueScore += 1;
-					} else {
-						redScore += 1;
-					}
-					this.x = 3000;
-					this.y = 2750;
-					this.vx = 0;
-					this.vy = 0;
-				} else {*/
 					this.x = rightBound - this.size;
 					this.vx *= -BALL_ELASTICITY;
 					this.vy *= BALL_ELASTICITY;
-				//}
 			}
 			
 			if(this.y > topBound - this.size){ //top-bottom map bound stopper
