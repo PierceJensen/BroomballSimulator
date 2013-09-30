@@ -56,6 +56,9 @@ public class GameMechanics {
 	public static int redScore;
 	public static int goalPosition;
 
+	final int[] playerStartX = {0, 1000, 2000, 1000, 0};
+	final int[] playerStartY = {3200, 3200, 2750, 2300, 2300};
+
 	ArrayList<Entity> playerList;
 	ArrayList<int[]> playerArrayList;
 	static int[][] playerArray;
@@ -122,9 +125,7 @@ public class GameMechanics {
 			corner[i].ypoints = cornerPointsY[i];
 		}
 
-		int[] playerStartX = {0, 1000, 2000, 1000, 0};
-		int[] playerStartY = {3200, 3200, 2750, 2300, 2300};
-
+	
 		//player init
 		for(int i=0; i<10; i++){
 			Entity player = new Entity();
@@ -181,9 +182,15 @@ public class GameMechanics {
 			} else{
 				entity.radv = turnRate;
 			}
+			if(gameState == GAME_RUN)
+			{
+				entity.walking = keyArray[i][KEY_W] | keyArray[i][KEY_S];
+				entity.sideWalking = keyArray[i][KEY_A] | keyArray[i][KEY_D];
+			}else{
+				entity.walking =false;
+				entity.sideWalking =false;
+			}
 
-			entity.walking = keyArray[i][KEY_W] | keyArray[i][KEY_S];
-			entity.sideWalking = keyArray[i][KEY_A] | keyArray[i][KEY_D];
 
 			if(keyArray[i][KEY_W]){
 				entity.walkDirection = 1;
@@ -275,7 +282,7 @@ public class GameMechanics {
 			gameState=GAME_GOAL_SCORED;
 			gameDelay=GAME_GOAL_DELAY;
 		}
-		if(gameState==GAME_GOAL_SCORED)
+		if(gameState==GAME_GOAL_SCORED&&gameDelay>0)
 		{
 			gameDelay-=period;
 		}
@@ -287,6 +294,19 @@ public class GameMechanics {
 			ball.vx = 0;
 			ball.vy = 0;	
 			gameState=GAME_RUN;
+			
+			for(int i=0; i<10; i++){
+				Entity entity = operateEntityList(AL_READ, i, null);
+				
+				//team specific init
+				if(i<5){
+					entity.x = playerStartX[i];
+					entity.y = playerStartY[i];
+				} else {
+					entity.x = 6000 - playerStartX[i - 5];
+					entity.y = playerStartY[i - 5];
+				}
+			}
 		}
 		/// END RULE AREA ///
 
