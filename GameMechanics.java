@@ -77,6 +77,13 @@ public class GameMechanics {
 	private final int chargeBaseForce=2000;
 	boolean chargeCanceled;
 
+	int gameState;
+	final int GAME_INIT=0;
+	final int GAME_RUN=1;
+	final int GAME_GOAL_SCORED=2;
+
+	double gameDelay;
+	final double GAME_GOAL_DELAY=3;
 	//initialization
 	public void init(){
 
@@ -140,6 +147,8 @@ public class GameMechanics {
 		ball.x = 3000;
 		ball.y = 2750;
 		ball.ballInit();
+
+		gameState=GAME_RUN;
 	}//end initialization
 
 	//main entity operation method
@@ -247,29 +256,38 @@ public class GameMechanics {
 		rightGoal.addPoint(7420, 2590);
 		rightGoal.addPoint(7420, 3430);
 
-		if(leftGoal.contains(ball.x+2*ball.size, ball.y))
+		if(leftGoal.contains(ball.x+2*ball.size, ball.y)&&gameState==GAME_RUN)
 		{
 			if(goalPosition == BLUE_GOAL_RIGHT){
 				redScore += 1;
 			}else{
 				blueScore += 1;
 			}
-			ball.x = 3000;
-			ball.y = 2750;
-			ball.vx = 0;
-			ball.vy = 0;
-		}else if(rightGoal.contains(ball.x-2*ball.size, ball.y)){
+			gameState=GAME_GOAL_SCORED;
+			gameDelay=GAME_GOAL_DELAY;
+		}else if(rightGoal.contains(ball.x-2*ball.size, ball.y)&&gameState==GAME_RUN){
 			if(goalPosition == BLUE_GOAL_RIGHT){
 				blueScore += 1;
 			}else{
 				redScore += 1;
 			}
+
+			gameState=GAME_GOAL_SCORED;
+			gameDelay=GAME_GOAL_DELAY;
+		}
+		if(gameState==GAME_GOAL_SCORED)
+		{
+			gameDelay-=period;
+		}
+		if(gameDelay<=0&&gameState==GAME_GOAL_SCORED)
+		{
+			ballPossessor = -1;
 			ball.x = 3000;
 			ball.y = 2750;
 			ball.vx = 0;
-			ball.vy = 0;
+			ball.vy = 0;	
+			gameState=GAME_RUN;
 		}
-
 		/// END RULE AREA ///
 
 
