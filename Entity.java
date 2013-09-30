@@ -1,6 +1,7 @@
 //This class is the standard game thing type object, known as entities. This class
 //operates every function that is not affected by other entities. It is also used
 import java.awt.Polygon;
+import java.awt.Rectangle;
 //to define initial constants for each entity via each different init function
 //antoerh test comment
 import java.util.Random;
@@ -165,76 +166,41 @@ public class Entity extends GameMechanics{
 				this.vy = 0;
 			}
 			//CORNER CONDITIONS
-
-			double vMag =  Math.sqrt(this.vx*this.vx+this.vy*this.vy)*.7071;
+			double vMag = Math.sqrt(sqr(this.vx)+sqr(this.vy));
+			double CORNER_POSITION_OFFSET_MULTIPLIER = 1.1*.7071;
 			
-			for(int i=0;i<4;i++){
-				if(corner[i].contains(this.x+this.size*.5*cos((i+1)*45), this.y+this.size*.5*sin((i+1)*45))){
-					if(this.type == 3){
-						if(this.vy>=-this.vx)
-						{
-							this.vx= Math.pow(-1,(i+1))*vMag*cos((int) (45-this.bearing));
-							this.vy= Math.pow(-1,(i+1))*vMag*sin((int) (45-this.bearing));
-						}else{
-							this.vx= Math.pow(-1,(i))*vMag*cos((int) (45-this.bearing));
-							this.vy= Math.pow(-1,(i))*vMag*sin((int) (45-this.bearing));
-						}
-					}
+			int containingCorner = -1;
+			
+			for(int i=1;i<5;i++){
+				if(corner[i-1].contains(this.x+this.size*cos((i)*45), this.y+this.size*sin((i)*45))){
+					containingCorner = i;
 					
-					//double penetration = abs(cornerIntercept[i] -(/*x-coord*/this.y+this.size*.5*sin(45*(i+1)) - /*slope*/0.7071*Math.pow((-1),(i+1))*/*y-coord*/(this.x+this.size*.5*cos(45*(i+1)))))/*divided by sqrt(m^2+1)*//1.2247;
-					//double adjustment = (this.size*1.2247+cornerIntercept[i])/(this.y - Math.pow(-1, i+1)*.7071*this.x);
+					//this.vx -= cos(45*i)*vMag;
+					//this.vy -= sin(45*i)*vMag;
 					
-				}
-							
-
-					//this.x*=adjustment;
-					//this.y*=adjustment;
+					Rectangle rect1 = new Rectangle((int) this.x,(int) this.y,(int) 
+							(this.size*sign(cos(45*i))),(int) (this.size*sign(sin(i*45))));
+					Rectangle rect2 = new Rectangle();
+					
+					this.x -= sign(sin(45*i));
+					this.y -= sign(cos(45*i));
 					
 					break;
+				}
 			}
-			
-			
 			/*
 			switch(containingCorner){//if the ball intersects this corner, do this
 			case 1 ://top right
-				if(this.vy>=-this.vx)
-				{
-					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-				}else{
-					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
-				}
+				
 				break;
 			case 2 ://top left
-				if(this.vy>=-this.vx)
-				{
-					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-				}else{
-					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
-				}
+				
 				break;
 			case 3 ://bottom left
-				if(this.vy<=-this.vx)
-				{
-					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-				}else{
-					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
-				}
+				
 				break;
 			case 4 ://bottom right
-				if(this.vy>=-this.vx)
-				{
-					this.vx= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= -vMag*Math.cos(Math.toRadians(45-this.bearing));
-				}else{
-					this.vx= vMag*Math.cos(Math.toRadians(45-this.bearing));
-					this.vy= vMag*Math.cos(Math.toRadians(45-this.bearing));
-				}
+				
 				break;
 			default :
 				break;
