@@ -39,7 +39,7 @@ public class Entity extends GameMechanics{
 	int walkDirection;
 	int sideWalkDirection;
 	
-	final int[] cornerIntercept = {11900,5900,100,-5900};
+	final int[] cornerIntercept = {11900,5920,80,-5920};
 	
 	boolean walking = false;
 	boolean sideWalking = false;
@@ -178,12 +178,24 @@ public class Entity extends GameMechanics{
 					//this.vx -= cos(45*i)*vMag;
 					//this.vy -= sin(45*i)*vMag;
 					
-					Rectangle rect1 = new Rectangle((int) this.x,(int) this.y,(int) 
-							(this.size*sign(cos(45*i))),(int) (this.size*sign(sin(i*45))));
-					Rectangle rect2 = new Rectangle();
+					//calculate slopes
+					double entSlope = Math.pow(-1, i+1);
+					double cornerSlope = -1*entSlope;
 					
-					this.x -= sign(sin(45*i));
-					this.y -= sign(cos(45*i));
+					//define y-intercepts
+					double entB = this.y - this.x*entSlope;
+					double cornerB = cornerIntercept[i-1];
+					
+					//find the point of interception
+					double interceptX = (cornerB - entB)/(entSlope - cornerSlope);
+					double interceptY = entSlope*interceptX + entB;
+					
+					//calculate penetration amount
+					double penetration = this.size - Math.sqrt(sqr(this.x-interceptX)+sqr(this.y-interceptY));
+					
+					//shift the entity's position
+					this.x -= cos(45*i)*penetration;
+					this.y -= sin(45*i)*penetration;
 					
 					break;
 				}
