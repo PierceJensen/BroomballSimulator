@@ -79,17 +79,9 @@ public class GameMechanics {
 	final static double maxChargeTime=1;
 	private final int chargeBaseForce=2000;
 	boolean chargeCanceled;
-
-	int gameState;
-	final int GAME_INIT=0;
-	final int GAME_RUN=1;
-	final int GAME_GOAL_SCORED=2;
-
-	double gameDelay;
-	final double GAME_GOAL_DELAY=3;
+	
 	//initialization
 	public void init(){
-
 		generator = new Random();
 
 		playerList = new ArrayList<Entity>();
@@ -149,7 +141,11 @@ public class GameMechanics {
 		ball.y = 2750;
 		ball.ballInit();
 
-		gameState=GAME_RUN;
+		GameState.state=GameState.GAME_RUN;
+		GameState.period=1;
+		GameState.periodLength=60;
+		GameState.numOfPeriods=3;
+		GameState.time=GameState.periodLength;//CRITICAL. SETS TIME TO PERIOD LENGTH BEFORE STARTING GAME
 	}//end initialization
 
 	//main entity operation method
@@ -182,7 +178,7 @@ public class GameMechanics {
 			} else{
 				entity.radv = turnRate;
 			}
-			if(gameState == GAME_RUN)
+			if(GameState.state == GameState.GAME_RUN)
 			{
 				entity.walking = keyArray[i][KEY_W] | keyArray[i][KEY_S];
 				entity.sideWalking = keyArray[i][KEY_A] | keyArray[i][KEY_D];
@@ -248,8 +244,25 @@ public class GameMechanics {
 		if(ballPossessor == -1){
 			ball.move(period);
 		}
-		/// RULE AREA ///
-
+//////// RULE AREA ///
+		
+		//Time Stuff
+		if(GameState.state==GameState.GAME_RUN)
+		{
+			GameState.time -= 5*period;
+			
+			if(GameState.time<0){
+				GameState.period++;
+				GameState.time=GameState.periodLength;
+			}
+			if(GameState.period>GameState.numOfPeriods){
+				GameState.state=GameState.GAME_OVER;
+				GameState.time=0;
+				GameState.period=GameState.numOfPeriods;
+			}
+		}
+		
+		//Goal Stuff
 		Polygon leftGoal = new Polygon();
 		leftGoal.npoints=0;
 		leftGoal.addPoint(-1440, 3430);
@@ -263,37 +276,38 @@ public class GameMechanics {
 		rightGoal.addPoint(7420, 2590);
 		rightGoal.addPoint(7420, 3430);
 
-		if(leftGoal.contains(ball.x+2*ball.size, ball.y)&&gameState==GAME_RUN)
+		if(leftGoal.contains(ball.x+2*ball.size, ball.y)&&GameState.state==GameState.GAME_RUN)
 		{
 			if(goalPosition == BLUE_GOAL_RIGHT){
-				redScore += 1;
+				GameState.redScore += 1;
 			}else{
-				blueScore += 1;
+				GameState.blueScore += 1;
 			}
-			gameState=GAME_GOAL_SCORED;
-			gameDelay=GAME_GOAL_DELAY;
-		}else if(rightGoal.contains(ball.x-2*ball.size, ball.y)&&gameState==GAME_RUN){
+			
+			GameState.state=GameState.GAME_GOAL_SCORED;
+			GameState.delay=GameState.GAME_GOAL_DELAY;
+		}else if(rightGoal.contains(ball.x-2*ball.size, ball.y)&&GameState.state==GameState.GAME_RUN){
 			if(goalPosition == BLUE_GOAL_RIGHT){
-				blueScore += 1;
+				GameState.blueScore += 1;
 			}else{
-				redScore += 1;
+				GameState.redScore += 1;
 			}
 
-			gameState=GAME_GOAL_SCORED;
-			gameDelay=GAME_GOAL_DELAY;
+			GameState.state=GameState.GAME_GOAL_SCORED;
+			GameState.delay=GameState.GAME_GOAL_DELAY;
 		}
-		if(gameState==GAME_GOAL_SCORED&&gameDelay>0)
+		if(GameState.state==GameState.GAME_GOAL_SCORED&&GameState.delay>0)
 		{
-			gameDelay-=period;
+			GameState.delay-=period;
 		}
-		if(gameDelay<=0&&gameState==GAME_GOAL_SCORED)
+		if(GameState.delay<=0&&GameState.state==GameState.GAME_GOAL_SCORED)
 		{
 			ballPossessor = -1;
 			ball.x = 3000;
 			ball.y = 2750;
 			ball.vx = 0;
 			ball.vy = 0;	
-			gameState=GAME_RUN;
+			GameState.state=GameState.GAME_RUN;
 			
 			for(int i=0; i<10; i++){
 				Entity entity = operateEntityList(AL_READ, i, null);
@@ -306,9 +320,11 @@ public class GameMechanics {
 					entity.x = 6000 - playerStartX[i - 5];
 					entity.y = playerStartY[i - 5];
 				}
+				entity.vx=0;
+				entity.vy=0;
 			}
 		}
-		/// END RULE AREA ///
+//////// END RULE AREA ///
 
 
 
@@ -531,8 +547,8 @@ public class GameMechanics {
 			if(streams[i] == null) continue;
 
 			try {
-
 				streams[i].writeDouble(time);
+				streams[i].writeInt(GameState.period);
 				streams[i].writeObject(playerArray);
 				//write ball info
 				for (int j=0;j<ballArray.length;j++){
@@ -540,8 +556,8 @@ public class GameMechanics {
 				}
 				streams[i].writeInt(ballPossessor);
 				streams[i].writeDouble(chargeTime);
-				streams[i].writeInt(blueScore);
-				streams[i].writeInt(redScore);
+				streams[i].writeInt(GameState.blueScore);
+				streams[i].writeInt(GameState.redScore);
 				streams[i].writeInt(goalPosition);
 
 				streams[i].flush();

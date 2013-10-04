@@ -10,8 +10,6 @@ class Server extends TimerTask {
 	
 	GameMechanics game;
 	
-	public double gameTime;
-	
 	TcpListener clientListen;
 	ServerDataListener dataListen;
 	
@@ -67,9 +65,7 @@ class Server extends TimerTask {
 		
 		game.operateEntities(period);
 		
-		game.sendData(clientListen.streams, gameTime);
-		
-		gameTime += period;
+		game.sendData(clientListen.streams, GameState.time);
 		
 	}
 
