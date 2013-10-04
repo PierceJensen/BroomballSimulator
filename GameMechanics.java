@@ -251,9 +251,10 @@ public class GameMechanics {
 		{
 			GameState.time -= 5*period;
 			
-			if(GameState.time<0){
-				GameState.period++;
-				GameState.time=GameState.periodLength;
+			if(GameState.time<=0){
+				GameState.state=GameState.GAME_GOAL_SCORED;
+				GameState.delay=GameState.GAME_PERIOD_DELAY;
+				GameState.time=0;
 			}
 			if(GameState.period>GameState.numOfPeriods){
 				GameState.state=GameState.GAME_OVER;
@@ -262,6 +263,27 @@ public class GameMechanics {
 			}
 		}
 		
+		if(GameState.isGameDelayed()&&GameState.delay>0)
+		{
+			GameState.delay-=period;
+		}
+		
+		if(GameState.delay<=0&&GameState.isGameDelayed())
+		{
+			if(GameState.state==GameState.GAME_PERIOD_OVER){
+				GameState.period++;
+				GameState.time=GameState.periodLength;
+			}
+			ballPossessor = -1;
+			ball.x = 3000;
+			ball.y = 2750;
+			ball.vx = 0;
+			ball.vy = 0;	
+			GameState.state=GameState.GAME_RUN;
+			
+			repositionPlayers();
+		}
+	
 		//Goal Stuff
 		Polygon leftGoal = new Polygon();
 		leftGoal.npoints=0;
@@ -296,37 +318,8 @@ public class GameMechanics {
 			GameState.state=GameState.GAME_GOAL_SCORED;
 			GameState.delay=GameState.GAME_GOAL_DELAY;
 		}
-		if(GameState.state==GameState.GAME_GOAL_SCORED&&GameState.delay>0)
-		{
-			GameState.delay-=period;
-		}
-		if(GameState.delay<=0&&GameState.state==GameState.GAME_GOAL_SCORED)
-		{
-			ballPossessor = -1;
-			ball.x = 3000;
-			ball.y = 2750;
-			ball.vx = 0;
-			ball.vy = 0;	
-			GameState.state=GameState.GAME_RUN;
-			
-			for(int i=0; i<10; i++){
-				Entity entity = operateEntityList(AL_READ, i, null);
-				
-				//team specific init
-				if(i<5){
-					entity.x = playerStartX[i];
-					entity.y = playerStartY[i];
-				} else {
-					entity.x = 6000 - playerStartX[i - 5];
-					entity.y = playerStartY[i - 5];
-				}
-				entity.vx=0;
-				entity.vy=0;
-			}
-		}
+	
 //////// END RULE AREA ///
-
-
 
 		//now check for collisions
 		for(int i=0;i<11;i++){
@@ -364,7 +357,23 @@ public class GameMechanics {
 
 		ballArray = convertBallToArray(ball);
 	}
-
+	
+void repositionPlayers (){
+	for(int i=0; i<10; i++){
+		Entity entity = operateEntityList(AL_READ, i, null);
+		
+		//team specific init
+		if(i<5){
+			entity.x = playerStartX[i];
+			entity.y = playerStartY[i];
+		} else {
+			entity.x = 6000 - playerStartX[i - 5];
+			entity.y = playerStartY[i - 5];
+		}
+		entity.vx=0;
+		entity.vy=0;
+	}
+}	
 	//custom mathematical square function
 	double sqr(double i){
 		return i*i;
