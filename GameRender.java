@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
@@ -49,6 +50,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	double magnification = 1;
 	double gameTime = 0;
+	int gamePeriod=0;
 	double screenXFactor = 1;
 	double screenYFactor = 1;
 	
@@ -226,6 +228,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	
 	private void networkTransmit() throws IOException{
 		//retrieve arrays
+		gameTime= recieveDataHandler.gameTime;
+		gamePeriod = recieveDataHandler.gamePeriod;
 		playerArray = recieveDataHandler.playerArray;
 		ballArray = recieveDataHandler.ballArray;
 		ballPossessor = recieveDataHandler.ballPossessor;
@@ -255,6 +259,9 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		g.drawString("Red Score:" + redScore, bluePosition, (int)(screenHeight*.025));
 		g.setColor(Color.BLUE);
 		g.drawString("Blue Score:" + blueScore, redPosition, (int)(screenHeight*.025));
+		g.setColor(Color.WHITE);
+		g.drawString(timeToString(gameTime), (int)(screenWidth*.9622)/2, (int)(screenHeight*.025));
+		g.drawString("Period: "+gamePeriod, (int)(screenWidth*.35), (int)(screenHeight*.025));
 		g.setFont(font2);
 		
 		//entity draw loop
@@ -560,6 +567,32 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 	}
 	double screenYToWorld(double screenY){
 		return (1 - screenY/screenHeight)*mapheight;
+	}
+	
+	
+	String timeToString(double time){
+		String text = new String();
+		int minutes = (int)time/60;
+		double seconds = time%60;
+		
+		BigDecimal bd = new BigDecimal(String.valueOf(seconds)).setScale(2, BigDecimal.ROUND_HALF_UP);
+		seconds = bd.doubleValue();
+		
+		
+		if(minutes<10)
+		{
+			text = "0" + minutes;
+		}else{	
+			text =  "" + minutes;
+		}
+		if(seconds<10)
+		{
+			text=text+ " : 0" + seconds;
+		}else{
+			text=text+ " : " + seconds;
+			
+		}
+		return text;
 	}
 	
 	/*custom trigonometry functions*/

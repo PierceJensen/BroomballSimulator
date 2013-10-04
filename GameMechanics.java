@@ -56,6 +56,9 @@ public class GameMechanics {
 	public static int redScore;
 	public static int goalPosition;
 
+	final int[] playerStartX = {0, 1000, 2000, 1000, 0};
+	final int[] playerStartY = {3200, 3200, 2750, 2300, 2300};
+
 	ArrayList<Entity> playerList;
 	ArrayList<int[]> playerArrayList;
 	static int[][] playerArray;
@@ -79,7 +82,6 @@ public class GameMechanics {
 
 	//initialization
 	public void init(){
-
 		generator = new Random();
 
 		playerList = new ArrayList<Entity>();
@@ -115,8 +117,6 @@ public class GameMechanics {
 			corner[i].ypoints = cornerPointsY[i];
 		}
 
-		int[] playerStartX = {0, 1000, 2000, 1000, 0};
-		int[] playerStartY = {3200, 3200, 2750, 2300, 2300};
 
 		//player init
 		for(int i=0; i<10; i++){
@@ -140,6 +140,12 @@ public class GameMechanics {
 		ball.x = 3000;
 		ball.y = 2750;
 		ball.ballInit();
+
+		GameState.state=GameState.GAME_RUN;
+		GameState.period=1;
+		GameState.periodLength=60;
+		GameState.numOfPeriods=3;
+		GameState.time=GameState.periodLength;//CRITICAL. SETS TIME TO PERIOD LENGTH BEFORE STARTING GAME
 	}//end initialization
 
 	//main entity operation method
@@ -172,9 +178,15 @@ public class GameMechanics {
 			} else{
 				entity.radv = turnRate;
 			}
+			if(GameState.state == GameState.GAME_RUN)
+			{
+				entity.walking = keyArray[i][KEY_W] | keyArray[i][KEY_S];
+				entity.sideWalking = keyArray[i][KEY_A] | keyArray[i][KEY_D];
+			}else{
+				entity.walking =false;
+				entity.sideWalking =false;
+			}
 
-			entity.walking = keyArray[i][KEY_W] | keyArray[i][KEY_S];
-			entity.sideWalking = keyArray[i][KEY_A] | keyArray[i][KEY_D];
 
 			if(keyArray[i][KEY_W]){
 				entity.walkDirection = 1;
@@ -232,8 +244,59 @@ public class GameMechanics {
 		if(ballPossessor == -1){
 			ball.move(period);
 		}
-		/// RULE AREA ///
+		//////// RULE AREA ///
 
+		//Time Stuff
+		if(GameState.state==GameState.GAME_RUN)
+		{
+			GameState.time -= 10*period;
+
+			if(GameState.time<=0){
+				GameState.state=GameState.GAME_PERIOD_OVER;
+				GameState.delay=GameState.GAME_PERIOD_DELAY;
+				GameState.time=0;
+			}
+		}
+
+		if(GameState.isGameDelayed()&&GameState.delay>0)
+		{
+			GameState.delay-=period;
+		}
+
+		if(GameState.delay<=0&&GameState.isGameDelayed())
+		{
+			if(GameState.state==GameState.GAME_PERIOD_OVER&&GameState.period<GameState.numOfPeriods){
+				GameState.period++;
+				GameState.time=GameState.periodLength;
+				ballPossessor = -1;
+				ball.x = 3000;
+				ball.y = 2750;
+				ball.vx = 0;
+				ball.vy = 0;	
+
+				repositionPlayers();
+
+				GameState.state=GameState.GAME_RUN;
+
+			}else if(GameState.state==GameState.GAME_PERIOD_OVER&&GameState.period>=GameState.numOfPeriods){
+				GameState.state=GameState.GAME_OVER;
+				GameState.time=0;
+				GameState.period=GameState.numOfPeriods;
+			}else if(GameState.state==GameState.GAME_GOAL_SCORED){
+
+				GameState.state=GameState.GAME_RUN;
+				ballPossessor = -1;
+				ball.x = 3000;
+				ball.y = 2750;
+				ball.vx = 0;
+				ball.vy = 0;	
+
+				repositionPlayers();
+			}
+
+		}
+
+		//Goal Stuff
 		Polygon leftGoal = new Polygon();
 		leftGoal.npoints=0;
 		leftGoal.addPoint(-1440, 3430);
@@ -247,32 +310,28 @@ public class GameMechanics {
 		rightGoal.addPoint(7420, 2590);
 		rightGoal.addPoint(7420, 3430);
 
-		if(leftGoal.contains(ball.x+2*ball.size, ball.y))
+		if(leftGoal.contains(ball.x+2*ball.size, ball.y)&&GameState.state==GameState.GAME_RUN)
 		{
 			if(goalPosition == BLUE_GOAL_RIGHT){
-				redScore += 1;
+				GameState.redScore += 1;
 			}else{
-				blueScore += 1;
+				GameState.blueScore += 1;
 			}
-			ball.x = 3000;
-			ball.y = 2750;
-			ball.vx = 0;
-			ball.vy = 0;
-		}else if(rightGoal.contains(ball.x-2*ball.size, ball.y)){
+
+			GameState.state=GameState.GAME_GOAL_SCORED;
+			GameState.delay=GameState.GAME_GOAL_DELAY;
+		}else if(rightGoal.contains(ball.x-2*ball.size, ball.y)&&GameState.state==GameState.GAME_RUN){
 			if(goalPosition == BLUE_GOAL_RIGHT){
-				blueScore += 1;
+				GameState.blueScore += 1;
 			}else{
-				redScore += 1;
+				GameState.redScore += 1;
 			}
-			ball.x = 3000;
-			ball.y = 2750;
-			ball.vx = 0;
-			ball.vy = 0;
+
+			GameState.state=GameState.GAME_GOAL_SCORED;
+			GameState.delay=GameState.GAME_GOAL_DELAY;
 		}
 
-		/// END RULE AREA ///
-
-
+		//////// END RULE AREA ///
 
 		//now check for collisions
 		for(int i=0;i<11;i++){
@@ -311,6 +370,22 @@ public class GameMechanics {
 		ballArray = convertBallToArray(ball);
 	}
 
+	void repositionPlayers (){
+		for(int i=0; i<10; i++){
+			Entity entity = operateEntityList(AL_READ, i, null);
+
+			//team specific init
+			if(i<5){
+				entity.x = playerStartX[i];
+				entity.y = playerStartY[i];
+			} else {
+				entity.x = 6000 - playerStartX[i - 5];
+				entity.y = playerStartY[i - 5];
+			}
+			entity.vx=0;
+			entity.vy=0;
+		}
+	}	
 	//custom mathematical square function
 	double sqr(double i){
 		return i*i;
@@ -493,8 +568,8 @@ public class GameMechanics {
 			if(streams[i] == null) continue;
 
 			try {
-
 				streams[i].writeDouble(time);
+				streams[i].writeInt(GameState.period);
 				streams[i].writeObject(playerArray);
 				//write ball info
 				for (int j=0;j<ballArray.length;j++){
@@ -502,8 +577,8 @@ public class GameMechanics {
 				}
 				streams[i].writeInt(ballPossessor);
 				streams[i].writeDouble(chargeTime);
-				streams[i].writeInt(blueScore);
-				streams[i].writeInt(redScore);
+				streams[i].writeInt(GameState.blueScore);
+				streams[i].writeInt(GameState.redScore);
 				streams[i].writeInt(goalPosition);
 
 				streams[i].flush();
