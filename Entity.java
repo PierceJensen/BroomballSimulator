@@ -166,17 +166,13 @@ public class Entity extends GameMechanics{
 				this.vy = 0;
 			}
 			//CORNER CONDITIONS
-			double vMag = Math.sqrt(sqr(this.vx)+sqr(this.vy));
-			double CORNER_POSITION_OFFSET_MULTIPLIER = 1.1*.7071;
-			
-			int containingCorner = -1;
-			
 			for(int i=1;i<5;i++){
-				if(corner[i-1].contains(this.x+this.size*cos((i)*45), this.y+this.size*sin((i)*45))){
-					containingCorner = i;
+				if(corner[i-1].contains(this.x+this.size*cos((i)*90 - 45), this.y+this.size*sin((i)*90 - 45))){
 					
-					//this.vx -= cos(45*i)*vMag;
-					//this.vy -= sin(45*i)*vMag;
+					double vuDot = cos(90*i - 45)*this.vx+sin(90*i - 45)*this.vy;
+					
+					this.vx -= cos(90*i - 45)*vuDot;
+					this.vy -= sin(90*i - 45)*vuDot;
 					
 					//calculate slopes
 					double entSlope = Math.pow(-1, i+1);
@@ -194,54 +190,12 @@ public class Entity extends GameMechanics{
 					double penetration = this.size - Math.sqrt(sqr(this.x-interceptX)+sqr(this.y-interceptY));
 					
 					//shift the entity's position
-					this.x -= cos(45*i)*penetration;
-					this.y -= sin(45*i)*penetration;
+					this.x -= cos(90*i - 45)*penetration;
+					this.y -= sin(90*i - 45)*penetration;
 					
 					break;
 				}
 			}
-			/*
-			switch(containingCorner){//if the ball intersects this corner, do this
-			case 1 ://top right
-				
-				break;
-			case 2 ://top left
-				
-				break;
-			case 3 ://bottom left
-				
-				break;
-			case 4 ://bottom right
-				
-				break;
-			default :
-				break;
-			}
-			
-			if(this.y<(-this.x)+100+(.7071*this.size))//Bottom Left
-			{
-				
-				this.x+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
-				this.y+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
-			}
-			if(this.y>-(this.x)+11900+(.7071*this.size))//Top Right
-			{
-				
-			}
-			
-			if(this.y>(this.x)+5900-(.7071*this.size))//Top Left
-			{
-				
-				this.x+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
-				this.y-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
-			}
-			if( this.y<(this.x)-5900+(.7071*this.size))//Bottom Right
-			{
-				
-				this.x-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
-				this.y+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
-			}
-			*/
 		}
 		//3430 2590
 		if(this.type == 1){//ball
@@ -266,27 +220,59 @@ public class Entity extends GameMechanics{
 					this.vy *= BALL_ELASTICITY;
 				}
 			
-		}else{			
-			if(this.x < leftBound + this.size){ //left-right map bound stopper
-					this.x = leftBound + this.size;
-					this.vx *= -BALL_ELASTICITY;
-					this.vy *= BALL_ELASTICITY;
-			}else if(this.x > rightBound - this.size){ //RIGHT SIDE
-					this.x = rightBound - this.size;
-					this.vx *= -BALL_ELASTICITY;
-					this.vy *= BALL_ELASTICITY;
+			}else{			
+				if(this.x < leftBound + this.size){ //left-right map bound stopper
+						this.x = leftBound + this.size;
+						this.vx *= -BALL_ELASTICITY;
+						this.vy *= BALL_ELASTICITY;
+				}else if(this.x > rightBound - this.size){ //RIGHT SIDE
+						this.x = rightBound - this.size;
+						this.vx *= -BALL_ELASTICITY;
+						this.vy *= BALL_ELASTICITY;
+				}
+				
+				if(this.y > topBound - this.size){ //top-bottom map bound stopper
+					this.y = topBound - this.size;
+					this.vy *= -BALL_ELASTICITY;
+					this.vx *= BALL_ELASTICITY;
+				}else if(this.y < bottomBound + this.size){ // BOTTOM
+					this.y = bottomBound + this.size;
+					this.vy *= -BALL_ELASTICITY;
+					this.vx *= BALL_ELASTICITY;
+				}
 			}
 			
-			if(this.y > topBound - this.size){ //top-bottom map bound stopper
-				this.y = topBound - this.size;
-				this.vy *= -BALL_ELASTICITY;
-				this.vx *= BALL_ELASTICITY;
-			}else if(this.y < bottomBound + this.size){ // BOTTOM
-				this.y = bottomBound + this.size;
-				this.vy *= -BALL_ELASTICITY;
-				this.vx *= BALL_ELASTICITY;
+			
+			//corner conditions
+			for(int i=1;i<5;i++){
+				if(corner[i-1].contains(this.x+this.size*cos((i)*90 - 45), this.y+this.size*sin((i)*90 - 45))){
+					
+					double temp = this.vx*BALL_ELASTICITY*Math.pow(-1,i);
+					this.vx = this.vy*BALL_ELASTICITY*Math.pow(-1,i);
+					this.vy = temp;
+					
+					//calculate slopes
+					double entSlope = Math.pow(-1, i+1);
+					double cornerSlope = -1*entSlope;
+					
+					//define y-intercepts
+					double entB = this.y - this.x*entSlope;
+					double cornerB = cornerIntercept[i-1];
+					
+					//find the point of interception
+					double interceptX = (cornerB - entB)/(entSlope - cornerSlope);
+					double interceptY = entSlope*interceptX + entB;
+					
+					//calculate penetration amount
+					double penetration = this.size - Math.sqrt(sqr(this.x-interceptX)+sqr(this.y-interceptY));
+					
+					//shift the entity's position
+					this.x -= cos(90*i - 45)*penetration*2+abs(this.vx)*sign(cos(90*i - 45))*period*2;
+					this.y -= sin(90*i - 45)*penetration*2+abs(this.vy)*sign(sin(90*i - 45))*period*2;
+					
+					break;
+				}
 			}
-		}
 			//CORNER CONDITIONS
 		/*	final double CORNER_POSITION_OFFSET_MULTIPLIER = 2*.7071;//NEEDS *.7071 FOR PROPER OPERATION
 			if(this.y<(-this.x)+100+(.7071*this.size))//Bottom Left
@@ -303,6 +289,7 @@ public class Entity extends GameMechanics{
 				double temp= -(this.vx*BALL_ELASTICITY);
 				this.vx=-(this.vy*BALL_ELASTICITY);
 				this.vy=temp;
+				
 				this.x-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 				this.y-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 			}
@@ -312,6 +299,7 @@ public class Entity extends GameMechanics{
 				double temp= (this.vx*BALL_ELASTICITY);
 				this.vx=(this.vy*BALL_ELASTICITY);
 				this.vy=temp;
+				
 				this.x+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 				this.y-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 			}
@@ -320,6 +308,7 @@ public class Entity extends GameMechanics{
 				double temp= (this.vx*BALL_ELASTICITY);
 				this.vx=(this.vy*BALL_ELASTICITY);
 				this.vy=temp;
+				
 				this.x-=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 				this.y+=CORNER_POSITION_OFFSET_MULTIPLIER*this.size;
 			}
