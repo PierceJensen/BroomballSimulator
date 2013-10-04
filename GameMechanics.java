@@ -79,7 +79,7 @@ public class GameMechanics {
 	final static double maxChargeTime=1;
 	private final int chargeBaseForce=2000;
 	boolean chargeCanceled;
-	
+
 	//initialization
 	public void init(){
 		generator = new Random();
@@ -117,7 +117,7 @@ public class GameMechanics {
 			corner[i].ypoints = cornerPointsY[i];
 		}
 
-	
+
 		//player init
 		for(int i=0; i<10; i++){
 			Entity player = new Entity();
@@ -244,46 +244,58 @@ public class GameMechanics {
 		if(ballPossessor == -1){
 			ball.move(period);
 		}
-//////// RULE AREA ///
-		
+		//////// RULE AREA ///
+
 		//Time Stuff
 		if(GameState.state==GameState.GAME_RUN)
 		{
-			GameState.time -= 5*period;
-			
+			GameState.time -= 10*period;
+
 			if(GameState.time<=0){
-				GameState.state=GameState.GAME_GOAL_SCORED;
+				GameState.state=GameState.GAME_PERIOD_OVER;
 				GameState.delay=GameState.GAME_PERIOD_DELAY;
 				GameState.time=0;
 			}
-			if(GameState.period>GameState.numOfPeriods){
-				GameState.state=GameState.GAME_OVER;
-				GameState.time=0;
-				GameState.period=GameState.numOfPeriods;
-			}
 		}
-		
+
 		if(GameState.isGameDelayed()&&GameState.delay>0)
 		{
 			GameState.delay-=period;
 		}
-		
+
 		if(GameState.delay<=0&&GameState.isGameDelayed())
 		{
-			if(GameState.state==GameState.GAME_PERIOD_OVER){
+			if(GameState.state==GameState.GAME_PERIOD_OVER&&GameState.period<GameState.numOfPeriods){
 				GameState.period++;
 				GameState.time=GameState.periodLength;
+				ballPossessor = -1;
+				ball.x = 3000;
+				ball.y = 2750;
+				ball.vx = 0;
+				ball.vy = 0;	
+
+				repositionPlayers();
+
+				GameState.state=GameState.GAME_RUN;
+
+			}else if(GameState.state==GameState.GAME_PERIOD_OVER&&GameState.period>=GameState.numOfPeriods){
+				GameState.state=GameState.GAME_OVER;
+				GameState.time=0;
+				GameState.period=GameState.numOfPeriods;
+			}else if(GameState.state==GameState.GAME_GOAL_SCORED){
+
+				GameState.state=GameState.GAME_RUN;
+				ballPossessor = -1;
+				ball.x = 3000;
+				ball.y = 2750;
+				ball.vx = 0;
+				ball.vy = 0;	
+
+				repositionPlayers();
 			}
-			ballPossessor = -1;
-			ball.x = 3000;
-			ball.y = 2750;
-			ball.vx = 0;
-			ball.vy = 0;	
-			GameState.state=GameState.GAME_RUN;
-			
-			repositionPlayers();
+
 		}
-	
+
 		//Goal Stuff
 		Polygon leftGoal = new Polygon();
 		leftGoal.npoints=0;
@@ -305,7 +317,7 @@ public class GameMechanics {
 			}else{
 				GameState.blueScore += 1;
 			}
-			
+
 			GameState.state=GameState.GAME_GOAL_SCORED;
 			GameState.delay=GameState.GAME_GOAL_DELAY;
 		}else if(rightGoal.contains(ball.x-2*ball.size, ball.y)&&GameState.state==GameState.GAME_RUN){
@@ -318,8 +330,8 @@ public class GameMechanics {
 			GameState.state=GameState.GAME_GOAL_SCORED;
 			GameState.delay=GameState.GAME_GOAL_DELAY;
 		}
-	
-//////// END RULE AREA ///
+
+		//////// END RULE AREA ///
 
 		//now check for collisions
 		for(int i=0;i<11;i++){
@@ -357,23 +369,23 @@ public class GameMechanics {
 
 		ballArray = convertBallToArray(ball);
 	}
-	
-void repositionPlayers (){
-	for(int i=0; i<10; i++){
-		Entity entity = operateEntityList(AL_READ, i, null);
-		
-		//team specific init
-		if(i<5){
-			entity.x = playerStartX[i];
-			entity.y = playerStartY[i];
-		} else {
-			entity.x = 6000 - playerStartX[i - 5];
-			entity.y = playerStartY[i - 5];
+
+	void repositionPlayers (){
+		for(int i=0; i<10; i++){
+			Entity entity = operateEntityList(AL_READ, i, null);
+
+			//team specific init
+			if(i<5){
+				entity.x = playerStartX[i];
+				entity.y = playerStartY[i];
+			} else {
+				entity.x = 6000 - playerStartX[i - 5];
+				entity.y = playerStartY[i - 5];
+			}
+			entity.vx=0;
+			entity.vy=0;
 		}
-		entity.vx=0;
-		entity.vy=0;
-	}
-}	
+	}	
 	//custom mathematical square function
 	double sqr(double i){
 		return i*i;
