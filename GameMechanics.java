@@ -249,7 +249,7 @@ public class GameMechanics {
 		//Time Stuff
 		if(GameState.state==GameState.GAME_RUN)
 		{
-			GameState.time -= 10*period;
+			GameState.time -= period;
 
 			if(GameState.time<=0){
 				GameState.state=GameState.GAME_PERIOD_OVER;

@@ -31,7 +31,13 @@ public class Client extends Thread {
 		new DisplayMode(1600,900,32,0),
 		new DisplayMode(1600,900,24,0),
 		new DisplayMode(1600,900,16,0),
-		new DisplayMode(1366,768,32,0),
+		new DisplayMode(1200,675,32,0),
+		new DisplayMode(1200,675,24,0),
+		new DisplayMode(1200,675,16,0),
+		new DisplayMode(800,450,32,0),
+		new DisplayMode(800,450,24,0),
+		new DisplayMode(800,450,16,0),
+		/*new DisplayMode(1366,768,32,0),
 		new DisplayMode(1366,768,24,0),
 		new DisplayMode(1366,768,16,0),
 		new DisplayMode(1280,1024,32,0),
@@ -45,7 +51,7 @@ public class Client extends Thread {
 		new DisplayMode(800,600,16,0),
 		new DisplayMode(640,480,32,0),
 		new DisplayMode(640,480,24,0),
-		new DisplayMode(640,480,16,0),
+		new DisplayMode(640,480,16,0),*/
 	};
 	
 	private void init(){

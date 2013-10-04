@@ -54,26 +54,26 @@ public class Entity extends GameMechanics{
 
 	//ship and structure initialization
 	public void playerInit(){
-		this.linFriction = 500;
+		this.linFriction = 250;
 		this.radFriction = 100;
 		this.size = 200;
 		this.type = 0;
 		this.maxRadSpeed = 100;
 		this.maxlinSpeed = 1000;
-		this.mass = 5;
+		this.mass = 100;
 		this.radInertia = 5;
-		this.walkForce = 5000;
-		this.sideWalkForce = 5000;
+		this.walkForce = 100000;
+		this.sideWalkForce = 100000;
 	}
 	
 	public void ballInit(){
-		this.linFriction = 500;
+		this.linFriction = 1000;
 		this.radFriction = 0;
 		this.size = 41;
 		this.type = 1;
 		this.maxRadSpeed = 300;
 		this.maxlinSpeed = 10000;
-		this.mass = 5;
+		this.mass = 1;
 		this.radInertia = 5;
 	}
 	
@@ -199,7 +199,7 @@ public class Entity extends GameMechanics{
 		}
 		//3430 2590
 		if(this.type == 1){//ball
-			if(this.y>GOAL_BOTTOM && this.y<GOAL_TOP)
+			if(this.y+this.size>GOAL_BOTTOM && this.y-this.size<GOAL_TOP)
 			{
 				//Top Goal Bound
 				if(this.y+this.size>GOAL_TOP && (this.x < leftBound ||this.x > rightBound)){
