@@ -7,7 +7,6 @@
 //This class manages all gameplay mechanics.
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.*;
 
@@ -207,7 +206,7 @@ public class GameMechanics {
 					if(abs(angDisplacement(bearingToTarget, entity.bearing)) < 90 && sqr(ball.x - entity.x) + sqr(ball.y - entity.y) < sqr(500)){
 						ballPossessor = i;
 					}
-				} else if(chargeTime > 0){
+				} else if(ballPossessor == i && chargeTime > 0){
 					chargeCanceled = true;
 					chargeTime = 0;
 				}
@@ -355,7 +354,17 @@ public class GameMechanics {
 
 				//check for intersection
 				if(sqr(entity1.x - entity2.x) + sqr(entity1.y - entity2.y) < sqr(entity1.size + entity2.size)){
-					twoBodyCollision(entity1, entity2);
+					if(entity1.type == entity2.type){
+						twoBodyCollision(entity1, entity2);
+					} else {
+						
+						//if one of the objects is a ball
+						if(entity1.type == 0){
+							ballPlayerCollision(entity2, entity1);
+						} else {
+							ballPlayerCollision(entity1, entity2);
+						}
+					}
 				}
 			}
 
@@ -456,6 +465,18 @@ public class GameMechanics {
 			return -sin[a - 270];
 		}
 	}
+	
+	public void ballPlayerCollision(Entity ball, Entity player){
+		double theta = Math.toDegrees(Math.atan2(player.y - ball.y, player.x - ball.x));
+		
+		double finalAngle = ball.bearing+2*angDisplacement(ball.bearing,theta);
+		double vMag = .35*Math.sqrt(sqr(ball.vx)+sqr(ball.vy));
+		
+		ball.x -= cos((int) theta)*(ball.size+player.size);
+		ball.y -= sin((int) theta)*(ball.size+player.size);
+		ball.vx = cos((int) finalAngle)*vMag;
+		ball.vy = sin((int) finalAngle)*vMag;
+	}
 
 	public void twoBodyCollision(Entity e1, Entity e2){
 		double m1 = e1.mass;
@@ -472,8 +493,6 @@ public class GameMechanics {
 		double size2 = e2.size;
 
 		double theta = Math.toDegrees(Math.atan2(y2 - y1, x2 - x1));
-
-		double separation = Math.sqrt(sqr(x2 - x1) + sqr(y2 - y1));
 
 		double sepModifier = .095;
 

@@ -1,9 +1,5 @@
 //This class is the standard game thing type object, known as entities. This class
-//operates every function that is not affected by other entities. It is also used
-import java.awt.Polygon;
-import java.awt.Rectangle;
 //to define initial constants for each entity via each different init function
-//antoerh test comment
 import java.util.Random;
 
 public class Entity extends GameMechanics{
