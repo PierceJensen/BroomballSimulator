@@ -7,6 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
@@ -264,6 +265,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		g.drawString("Period: "+gamePeriod, (int)(screenWidth*.35), (int)(screenHeight*.025));
 		g.setFont(font2);
 		
+
 		//entity draw loop
 		for(int i=0; i<playerArray.length; i++){
 			
@@ -324,6 +326,14 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 			//draws the ball
 			g.drawImage(ballImage, xform, null);
 		}
+		
+		BufferedImage test;
+		ArrayList<String>text = new ArrayList<String>();
+		text.add("BLUE");
+		text.add("GOAL");
+		test = generateSplashScreen(250,250, Color.BLUE,(float) .5, Color.BLACK,text);
+		g.drawImage(test,screenWidth/2, screenHeight/2, null);
+		
 		
 		g.setColor(Color.RED);
 		g.drawString(mouseWorld.x + ", " + mouseWorld.y,  worldXToScreen(mouseWorld.x), worldYToScreen(mouseWorld.y));
@@ -569,7 +579,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		return (1 - screenY/screenHeight)*mapheight;
 	}
 	
-	
+	//Convert seconds into a string for rendering
 	String timeToString(double time){
 		String text = new String();
 		int minutes = (int)time/60;
@@ -595,6 +605,26 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		return text;
 	}
 	
+	BufferedImage generateSplashScreen(int width, int height, Color bg, float opacity, Color text, ArrayList<String> strings){
+		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+		
+		Graphics2D splash = temp.createGraphics();
+		
+		splash.setColor(bg);
+		
+		splash.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+		
+		splash.fillRect(0,0,width, height);
+		
+		splash.setColor(text);
+		splash.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+		
+		for(int i = 0; i<strings.size(); i ++){
+			splash.drawString(strings.get(i), width/2, height/(strings.size()+1)*(i+1));
+		}
+		
+		return temp;
+	}
 	/*custom trigonometry functions*/
 	//cosine
 	public double cos(int a){
