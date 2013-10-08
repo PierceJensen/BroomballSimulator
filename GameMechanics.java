@@ -348,7 +348,7 @@ public class GameMechanics {
 				if(j != 10){
 					entity2 = playerList.get(j);
 				} else {
-					if(ballPossessor != -1) continue;
+					if(ballPossessor != -1) continue;//skips ball collision check if possessed
 					entity2 = ball;
 				}
 
@@ -472,10 +472,10 @@ public class GameMechanics {
 		double finalAngle = ball.bearing+2*angDisplacement(ball.bearing,theta);
 		double vMag = .35*Math.sqrt(sqr(ball.vx)+sqr(ball.vy));
 		
-		ball.x -= cos((int) theta)*(ball.size+player.size);
-		ball.y -= sin((int) theta)*(ball.size+player.size);
-		ball.vx = cos((int) finalAngle)*vMag;
-		ball.vy = sin((int) finalAngle)*vMag;
+		ball.x = player.x - cos((int) theta)*(ball.size+player.size);
+		ball.y = player.y - sin((int) theta)*(ball.size+player.size);
+		ball.vx = cos((int) -finalAngle)*vMag;
+		ball.vy = sin((int) -finalAngle)*vMag;
 	}
 
 	public void twoBodyCollision(Entity e1, Entity e2){
