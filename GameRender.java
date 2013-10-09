@@ -4,6 +4,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigDecimal;
@@ -331,8 +332,9 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		ArrayList<String>text = new ArrayList<String>();
 		text.add("BLUE");
 		text.add("GOAL");
-		test = generateSplashScreen(250,250, Color.BLUE,(float) .5, Color.BLACK,text);
-		g.drawImage(test,screenWidth/2, screenHeight/2, null);
+		text.add("SCORED");
+		test = generateSplashScreen(250, Color.BLUE,(float) .5, Color.BLACK,text);
+		g.drawImage(test,screenWidth/2-test.getWidth()/2, screenHeight/2-test.getWidth()/2, null);
 		
 		
 		g.setColor(Color.RED);
@@ -605,13 +607,26 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		return text;
 	}
 	
-	BufferedImage generateSplashScreen(int width, int height, Color bg, float opacity, Color text, ArrayList<String> strings){
-		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+	BufferedImage generateSplashScreen(int width, Color bg, float opacity, Color text, ArrayList<String> strings){
+		
+		BufferedImage temp = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
 		
 		Graphics2D splash = temp.createGraphics();
 		
+		Font boldFont = new Font("Arial", Font.BOLD, 72);
+			
 		splash.setColor(bg);
+		splash.setFont(boldFont);
+		FontMetrics fm = splash.getFontMetrics();
+		int height =(int) strings.size()*fm.getHeight()+fm.getHeight()-fm.getMaxAscent();	
 		
+		temp = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+		splash = temp.createGraphics();
+		
+		splash.setColor(bg);
+		splash.setFont(boldFont);
+		fm = splash.getFontMetrics();
+
 		splash.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 		
 		splash.fillRect(0,0,width, height);
@@ -620,7 +635,9 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		splash.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		
 		for(int i = 0; i<strings.size(); i ++){
-			splash.drawString(strings.get(i), width/2, height/(strings.size()+1)*(i+1));
+			Rectangle2D bounds = fm.getStringBounds(strings.get(i),splash);
+			double textHeight = fm.getAscent();
+			splash.drawString(strings.get(i), (int)(width/2-bounds.getCenterX()),(int)(height/2+3*textHeight/2-fm.getAscent()+(i-Math.floor(strings.size()/2))*textHeight   ));//+((i-strings.size()/2)*textHeight)));
 		}
 		
 		return temp;
