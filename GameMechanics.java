@@ -469,13 +469,15 @@ public class GameMechanics {
 	public void ballPlayerCollision(Entity ball, Entity player){
 		double theta = Math.toDegrees(Math.atan2(player.y - ball.y, player.x - ball.x));
 		
-		double finalAngle = ball.bearing+2*angDisplacement(ball.bearing,theta);
+		double bearing = Math.toDegrees(Math.atan2(ball.vy, ball.vx));
+		
+		double finalAngle = bearing-2*angDisplacement(-bearing,theta);
 		double vMag = .35*Math.sqrt(sqr(ball.vx)+sqr(ball.vy));
 		
 		ball.x = player.x - cos((int) theta)*(ball.size+player.size);
 		ball.y = player.y - sin((int) theta)*(ball.size+player.size);
-		ball.vx = cos((int) -finalAngle)*vMag;
-		ball.vy = sin((int) -finalAngle)*vMag;
+		ball.vx = cos((int) finalAngle)*vMag;
+		ball.vy = sin((int) finalAngle)*vMag;
 	}
 
 	public void twoBodyCollision(Entity e1, Entity e2){
