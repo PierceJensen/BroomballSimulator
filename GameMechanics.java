@@ -142,7 +142,7 @@ public class GameMechanics {
 
 		GameState.state=GameState.GAME_RUN;
 		GameState.period=1;
-		GameState.periodLength=60;
+		GameState.periodLength=600;
 		GameState.numOfPeriods=3;
 		GameState.time=GameState.periodLength;//CRITICAL. SETS TIME TO PERIOD LENGTH BEFORE STARTING GAME
 	}//end initialization
@@ -469,15 +469,20 @@ public class GameMechanics {
 	public void ballPlayerCollision(Entity ball, Entity player){
 		double theta = Math.toDegrees(Math.atan2(player.y - ball.y, player.x - ball.x));
 		
-		double bearing = Math.toDegrees(Math.atan2(ball.vy, ball.vx));
+		//double bearing = Math.toDegrees(Math.atan2(ball.vy, ball.vx)); //from the old method of angle reflection
 		
-		double finalAngle = bearing-2*angDisplacement(-bearing,theta);
-		double vMag = .35*Math.sqrt(sqr(ball.vx)+sqr(ball.vy));
+		double nX = cos((int) theta);
+		double nY = sin((int) theta);
+		
+		double vDot = ball.vx*nX+ball.vy*nY;
+		
+		//double finalAngle = bearing-2*angDisplacement(-bearing,theta);
+		//double vMag = .35*Math.sqrt(sqr(ball.vx)+sqr(ball.vy));
 		
 		ball.x = player.x - cos((int) theta)*(ball.size+player.size);
 		ball.y = player.y - sin((int) theta)*(ball.size+player.size);
-		ball.vx = cos((int) finalAngle)*vMag;
-		ball.vy = sin((int) finalAngle)*vMag;
+		ball.vx = .35*(ball.vx - 2*vDot*cos((int) theta));
+		ball.vy = .35*(ball.vy - 2*vDot*sin((int) theta));
 	}
 
 	public void twoBodyCollision(Entity e1, Entity e2){
