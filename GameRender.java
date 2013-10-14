@@ -330,11 +330,12 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		
 		BufferedImage test;
 		ArrayList<String>text = new ArrayList<String>();
-		text.add("BLUE");
-		text.add("GOAL");
-		text.add("SCORED");
-		test = generateSplashScreen(250, Color.BLUE,(float) .5, Color.BLACK,text);
-		g.drawImage(test,screenWidth/2-test.getWidth()/2, screenHeight/2-test.getWidth()/2, null);
+		text.add("BLUE GOAL");
+		//text.add("GOAL");
+		//text.add("SCORED");
+		//text.add("THIS IS TEXT");
+		test = generateSplashScreen(Color.BLUE,(float) .5, Color.BLACK,text);
+		g.drawImage(test,screenWidth/2-test.getWidth()/2, screenHeight/2-test.getHeight()/2, null);
 		
 		
 		g.setColor(Color.RED);
@@ -607,7 +608,7 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		return text;
 	}
 	
-	BufferedImage generateSplashScreen(int width, Color bg, float opacity, Color text, ArrayList<String> strings){
+	BufferedImage generateSplashScreen(Color bg, float opacity, Color text, ArrayList<String> strings){
 		
 		BufferedImage temp = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
 		
@@ -618,9 +619,17 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		splash.setColor(bg);
 		splash.setFont(boldFont);
 		FontMetrics fm = splash.getFontMetrics();
-		int height =(int) strings.size()*fm.getHeight()+fm.getHeight()-fm.getMaxAscent();	
+		int height =(int) strings.size()*fm.getAscent()+fm.getDescent();	
 		
-		temp = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+		double maxWidth =0; 
+		for(int i = 0; i < strings.size(); i++){
+			if(maxWidth<fm.getStringBounds(strings.get(i), splash).getWidth()){
+				maxWidth=fm.getStringBounds(strings.get(i), splash).getWidth();
+			}
+				
+		}
+		maxWidth=maxWidth+10;
+		temp = new BufferedImage((int) maxWidth, height, BufferedImage.TYPE_4BYTE_ABGR);
 		splash = temp.createGraphics();
 		
 		splash.setColor(bg);
@@ -629,15 +638,15 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 
 		splash.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 		
-		splash.fillRect(0,0,width, height);
+		splash.fillRect(0,0,(int) maxWidth, height);
 		
 		splash.setColor(text);
 		splash.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		
 		for(int i = 0; i<strings.size(); i ++){
 			Rectangle2D bounds = fm.getStringBounds(strings.get(i),splash);
-			double textHeight = fm.getAscent();
-			splash.drawString(strings.get(i), (int)(width/2-bounds.getCenterX()),(int)(height/2+3*textHeight/2-fm.getAscent()+(i-Math.floor(strings.size()/2))*textHeight   ));//+((i-strings.size()/2)*textHeight)));
+			double textHeight = fm.getHeight();
+			splash.drawString(strings.get(i), (int)(maxWidth/2-bounds.getCenterX()),(int)(fm.getAscent()*(i+1)));//eight/2+strings.size()*textHeight/2-fm.getAscent()+(i-Math.floor((strings.size())/2))*textHeight+(fm.getAscent()-fm.getHeight())/2   );+((i-strings.size()/2)*textHeight)));
 		}
 		
 		return temp;
