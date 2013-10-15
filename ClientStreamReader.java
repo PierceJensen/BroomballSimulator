@@ -11,6 +11,7 @@ public class ClientStreamReader implements Runnable {
 	private ObjectInputStream inStream;
 	
 	public double gameTime;
+	public int gameState;
 	public int playerNumber;
 	
 	public int[][] playerArray;
@@ -46,6 +47,7 @@ public class ClientStreamReader implements Runnable {
 					
 					gameTime = inStream.readDouble();
 					gamePeriod = inStream.readInt();
+					gameState = inStream.readInt();
 					playerArray = (int[][]) inStream.readObject();
 					
 					for(int i=0;i<3;i++){
@@ -54,8 +56,8 @@ public class ClientStreamReader implements Runnable {
 					
 					ballPossessor = inStream.readInt();
 					chargeTime = inStream.readDouble();
-					redScore = inStream.readInt();
 					blueScore = inStream.readInt();
+					redScore = inStream.readInt();
 					goalPosition = inStream.readInt();
 				}
 			} catch(Exception e){

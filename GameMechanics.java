@@ -281,7 +281,7 @@ public class GameMechanics {
 				GameState.state=GameState.GAME_OVER;
 				GameState.time=0;
 				GameState.period=GameState.numOfPeriods;
-			}else if(GameState.state==GameState.GAME_GOAL_SCORED){
+			}else if(GameState.isGoalScored()){
 
 				GameState.state=GameState.GAME_RUN;
 				ballPossessor = -1;
@@ -312,21 +312,24 @@ public class GameMechanics {
 		if(leftGoal.contains(ball.x+2*ball.size, ball.y)&&GameState.state==GameState.GAME_RUN)
 		{
 			if(goalPosition == BLUE_GOAL_RIGHT){
-				GameState.redScore += 1;
-			}else{
 				GameState.blueScore += 1;
+				GameState.state=GameState.GAME_BLUE_GOAL_SCORED;
+			}else{
+				GameState.redScore += 1;
+				GameState.state=GameState.GAME_RED_GOAL_SCORED;
 			}
-
-			GameState.state=GameState.GAME_GOAL_SCORED;
+			
 			GameState.delay=GameState.GAME_GOAL_DELAY;
 		}else if(rightGoal.contains(ball.x-2*ball.size, ball.y)&&GameState.state==GameState.GAME_RUN){
 			if(goalPosition == BLUE_GOAL_RIGHT){
-				GameState.blueScore += 1;
-			}else{
 				GameState.redScore += 1;
+				GameState.state=GameState.GAME_RED_GOAL_SCORED;
+			}else{
+				GameState.blueScore += 1;
+				GameState.state=GameState.GAME_BLUE_GOAL_SCORED;	
 			}
 
-			GameState.state=GameState.GAME_GOAL_SCORED;
+		
 			GameState.delay=GameState.GAME_GOAL_DELAY;
 		}
 
@@ -596,6 +599,7 @@ public class GameMechanics {
 			try {
 				streams[i].writeDouble(time);
 				streams[i].writeInt(GameState.period);
+				streams[i].writeInt(GameState.state);
 				streams[i].writeObject(playerArray);
 				//write ball info
 				for (int j=0;j<ballArray.length;j++){
