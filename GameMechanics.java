@@ -145,7 +145,9 @@ public class GameMechanics {
 		GameState.period=1;
 		GameState.periodLength=600;
 		GameState.numOfPeriods=3;
-		GameState.time=GameState.periodLength;//CRITICAL. SETS TIME TO PERIOD LENGTH BEFORE STARTING GAME
+		GameState.randomPlayerPositions = true;		
+		
+		GameState.time=GameState.periodLength;//CRITICAL. SETS TIME TO PERIOD LENGTH BEFORE STARTING GAME		
 	}//end initialization
 
 	//main entity operation method
@@ -384,19 +386,41 @@ public class GameMechanics {
 	}
 
 	void repositionPlayers (){
-		for(int i=0; i<10; i++){
-			Entity entity = operateEntityList(AL_READ, i, null);
+		if(!GameState.randomPlayerPositions){
+			for(int i=0; i<10; i++){
+				Entity entity = operateEntityList(AL_READ, i, null);
 
-			//team specific init
-			if(i<5){
-				entity.x = playerStartX[i];
-				entity.y = playerStartY[i];
-			} else {
-				entity.x = 6000 - playerStartX[i - 5];
-				entity.y = playerStartY[i - 5];
+				//team specific init
+				if(i<5){
+					entity.x = playerStartX[i];
+					entity.y = playerStartY[i];
+				} else {
+					entity.x = 6000 - playerStartX[i - 5];
+					entity.y = playerStartY[i - 5];
+				}
+				entity.vx=0;
+				entity.vy=0;
 			}
-			entity.vx=0;
-			entity.vy=0;
+		}else{
+			ArrayList<Integer> positions = new ArrayList<Integer>();
+			for(int i= 0; i<5; i++){
+				positions.add(i);	
+			}
+			Collections.shuffle(positions);
+			for(int i=0; i<10; i++){
+				Entity entity = operateEntityList(AL_READ, i, null);
+
+				//team specific init
+				if(i<5){
+					entity.x = playerStartX[positions.get(i)];
+					entity.y = playerStartY[positions.get(i)];
+				} else {
+					entity.x = 6000 - playerStartX[positions.get(i - 5)];
+					entity.y = playerStartY[positions.get(i-5)];
+				}
+				entity.vx=0;
+				entity.vy=0;
+			}
 		}
 	}	
 	//custom mathematical square function

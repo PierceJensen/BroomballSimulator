@@ -17,6 +17,7 @@ public class GameState {
 	static int numOfPeriods;
 	static int blueScore;
 	static int redScore;
+	static boolean randomPlayerPositions;
 	
 	public static boolean isGameDelayed(){
 		return isGoalScored()||state==GAME_PERIOD_OVER;
