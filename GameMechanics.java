@@ -61,6 +61,10 @@ public class GameMechanics {
 	ArrayList<Entity> playerList;
 	ArrayList<int[]> playerArrayList;
 	static int[][] playerArray;
+	
+	double interactDistance = 500;
+	double interactArc = 90;
+	double stealChance = .125;
 
 	Entity ball;
 	int[] ballArray;
@@ -74,10 +78,10 @@ public class GameMechanics {
 	boolean[][] keyArray;
 
 	int ballPossessor = -1;
-	double chargeTime;
+	double[] chargeTime;
 	final static double maxChargeTime=1;
 	private final int chargeBaseForce=2000;
-	boolean chargeCanceled;
+	boolean[] chargeCanceled;
 
 	
 	//initialization
@@ -85,6 +89,9 @@ public class GameMechanics {
 		generator = new Random();
 
 		playerList = new ArrayList<Entity>();
+		
+		chargeTime = new double[10];
+		chargeCanceled = new boolean[10];
 
 		/*build trigonometry tables*/
 		double toRadian = Math.PI/(180*trigScale);
@@ -204,12 +211,9 @@ public class GameMechanics {
 
 			//if a player clicks the right button, checks if that player can possess the ball
 			if(keyArray[i][KEY_RMOUSE]){
-				if(ballPossessor != i){
+				if(ballPossessor != i){//if the player is not holding the ball
 					
-					double grabDistance = 500;
-					double grabArcLength = 90;
-					
-					//targets holding player if the ball is held, if it is held
+					//if the ball is currently held by someone else, check if the player can steal
 					if(ballPossessor != -1){
 						
 						Entity holdingPlayer = operateEntityList(AL_READ, ballPossessor, null);
@@ -219,42 +223,52 @@ public class GameMechanics {
 						
 						bearingToTarget =  Math.toDegrees(Math.atan2( targetY - entity.y, targetX - entity.x));
 						
-						double stealChance = .125;
-						
-						if(abs(angDisplacement(bearingToTarget, entity.bearing)) < grabArcLength && sqr(targetX - entity.x)+sqr(targetY - entity.y) < sqr(grabDistance) && generator.nextDouble() <= stealChance){
+						if(abs(angDisplacement(bearingToTarget, entity.bearing)) < interactArc && sqr(targetX - entity.x)+sqr(targetY - entity.y) < sqr(interactDistance) && generator.nextDouble() <= stealChance){
 							ballPossessor = i;
 						}
 					} else { //else, check if it's within grab range
 					
 						bearingToTarget =  Math.toDegrees(Math.atan2(ball.y - entity.y, ball.x - entity.x));
-						if(abs(angDisplacement(bearingToTarget, entity.bearing)) < grabArcLength && sqr(ball.x - entity.x) + sqr(ball.y - entity.y) < sqr(grabDistance)){
+						if(abs(angDisplacement(bearingToTarget, entity.bearing)) < interactArc && sqr(ball.x - entity.x) + sqr(ball.y - entity.y) < sqr(interactDistance)){
 							ballPossessor = i;
 						}
 					}
 					
-				} else if(ballPossessor == i && chargeTime > 0){//if the clicking player already holds the ball, cancel any charge he holds
-					chargeCanceled = true;
-					chargeTime = 0;
+				}
+				
+				if(chargeTime[i] > 0){//cancel any charge he holds
+					chargeCanceled[i] = true;
+					chargeTime[i] = 0;
 				}
 			}
 
-			//if a player possesses the ball an left clicks, shoot it
+			//if a player left clicks, charge up a shot
 			if(keyArray[i][KEY_LMOUSE]){
-				if(ballPossessor == i && !chargeCanceled &&chargeTime<maxChargeTime){
-					chargeTime += period;
+				if(!chargeCanceled[i] && chargeTime[i]<maxChargeTime){
+					
+					chargeTime[i] += period;
 				}
-			} else if(ballPossessor == i){//if the button is let go with a ball
-				if(chargeTime > 0){
+			} else if(chargeTime[i] > 0){//if the button is let go
+				if(ballPossessor == i){//if the player is holding the ball
 					ballPossessor = -1;
 					ball.x = entity.x + cos((int)entity.bearing)*300;
 					ball.y = entity.y + sin((int)entity.bearing)*300;
-					double shootVel= chargeBaseForce*(-Math.pow(chargeTime*(2/maxChargeTime),4)+4*Math.pow(chargeTime*(2/maxChargeTime),2)-.25*chargeTime*(2/maxChargeTime)+1);
+					double shootVel= chargeBaseForce*(-Math.pow(chargeTime[i]*(2/maxChargeTime),4)+4*Math.pow(chargeTime[i]*(2/maxChargeTime),2)-.25*chargeTime[i]*(2/maxChargeTime)+1);
 					ball.vx = cos((int)entity.bearing)*shootVel;
 					ball.vy = sin((int)entity.bearing)*shootVel;
-					chargeTime = 0;
-				} else {
-					chargeCanceled = false;
+				} else {//else if the player is within shooting range of the ball
+					
+					bearingToTarget =  Math.toDegrees(Math.atan2(ball.y - entity.y, ball.x - entity.x));
+					
+					if(abs(angDisplacement(bearingToTarget, entity.bearing)) < interactArc && sqr(ball.x - entity.x)+sqr(ball.y - entity.y) < sqr(interactDistance)){
+						double shootVel= chargeBaseForce*(-Math.pow(chargeTime[i]*(2/maxChargeTime),4)+4*Math.pow(chargeTime[i]*(2/maxChargeTime),2)-.25*chargeTime[i]*(2/maxChargeTime)+1);
+						ball.vx = cos((int)entity.bearing)*shootVel;
+						ball.vy = sin((int)entity.bearing)*shootVel;
+					}
 				}
+				chargeTime[i] = 0;
+			} else {
+				chargeCanceled[i] = false;
 			}
 
 			//updates every entity's position. also capable of removing the entity
@@ -654,7 +668,7 @@ public class GameMechanics {
 					streams[i].writeInt(ballArray[j]);
 				}
 				streams[i].writeInt(ballPossessor);
-				streams[i].writeDouble(chargeTime);
+				streams[i].writeDouble(chargeTime[i]);
 				streams[i].writeInt(GameState.blueScore);
 				streams[i].writeInt(GameState.redScore);
 				streams[i].writeInt(goalPosition);

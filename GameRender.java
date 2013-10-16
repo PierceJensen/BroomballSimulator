@@ -299,23 +299,23 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 
 				//draws the ball
 				g.drawImage(ballImage, xform, null);
+			}
+			
+			//if you're charging a shot, draw the meter
+			if(chargeTime > 0 && playerNumber == i){
+				int meterDiameter = (int) (1000*screenYFactor);
+				BufferedImage meterImage = new BufferedImage(meterDiameter, meterDiameter, BufferedImage.TYPE_4BYTE_ABGR);
 
-				//if you're charging a shot, draw the meter
-				if(chargeTime > 0){
-					int meterDiameter = (int) (1000*screenYFactor);
-					BufferedImage meterImage = new BufferedImage(meterDiameter, meterDiameter, BufferedImage.TYPE_4BYTE_ABGR);
+				Graphics2D mI = meterImage.createGraphics();
+				mI.setColor(Color.getHSBColor((float)(1-(chargeTime/GameMechanics.maxChargeTime))/3, 1,(float)Math.min(-2*(chargeTime/GameMechanics.maxChargeTime)+2.5, 1)));
+				mI.fillArc(0, 0, meterDiameter, meterDiameter, 90 ,(int)(360*(chargeTime/GameMechanics.maxChargeTime)));
 
-					Graphics2D mI = meterImage.createGraphics();
-					mI.setColor(Color.getHSBColor((float)(1-(chargeTime/GameMechanics.maxChargeTime))/3, 1,(float)Math.min(-2*(chargeTime/GameMechanics.maxChargeTime)+2.5, 1)));
-					mI.fillArc(0, 0, meterDiameter, meterDiameter, 90 ,(int)(360*(chargeTime/GameMechanics.maxChargeTime)));
+				mI.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT, 0));
+				final double METER_INNER_DIAMETER_MULTIPLER=0.2;
+				mI.fillArc((int)(meterDiameter*METER_INNER_DIAMETER_MULTIPLER)/2, (int)(meterDiameter*METER_INNER_DIAMETER_MULTIPLER)/2, (int)(meterDiameter*(1-METER_INNER_DIAMETER_MULTIPLER)), (int)(meterDiameter*(1-METER_INNER_DIAMETER_MULTIPLER)),0,360); 
 
-					mI.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT, 0));
-					final double METER_INNER_DIAMETER_MULTIPLER=0.2;
-					mI.fillArc((int)(meterDiameter*METER_INNER_DIAMETER_MULTIPLER)/2, (int)(meterDiameter*METER_INNER_DIAMETER_MULTIPLER)/2, (int)(meterDiameter*(1-METER_INNER_DIAMETER_MULTIPLER)), (int)(meterDiameter*(1-METER_INNER_DIAMETER_MULTIPLER)),0,360); 
+				g.drawImage(meterImage, worldXToScreen(entity[0])-meterDiameter/2 , worldYToScreen(entity[1]) -meterDiameter/2, null);
 
-					g.drawImage(meterImage, worldXToScreen(entity[0])-meterDiameter/2 , worldYToScreen(entity[1]) -meterDiameter/2, null);
-
-				}
 			}
 		}
 
