@@ -204,12 +204,35 @@ public class GameMechanics {
 
 			//if a player clicks the right button, checks if that player can possess the ball
 			if(keyArray[i][KEY_RMOUSE]){
-				if(ballPossessor == -1){
-					bearingToTarget =  Math.toDegrees(Math.atan2(ball.y - entity.y, ball.x - entity.x));
-					if(abs(angDisplacement(bearingToTarget, entity.bearing)) < 90 && sqr(ball.x - entity.x) + sqr(ball.y - entity.y) < sqr(500)){
-						ballPossessor = i;
+				if(ballPossessor != i){
+					
+					double grabDistance = 500;
+					double grabArcLength = 90;
+					
+					//targets holding player if the ball is held, if it is held
+					if(ballPossessor != -1){
+						
+						Entity holdingPlayer = operateEntityList(AL_READ, ballPossessor, null);
+						
+						double targetX = holdingPlayer.x + cos((int) holdingPlayer.bearing)*300;
+						double targetY = holdingPlayer.y + sin((int) holdingPlayer.bearing)*300;
+						
+						bearingToTarget =  Math.toDegrees(Math.atan2( targetY - entity.y, targetX - entity.x));
+						
+						double stealChance = .125;
+						
+						if(abs(angDisplacement(bearingToTarget, entity.bearing)) < grabArcLength && sqr(targetX - entity.x)+sqr(targetY - entity.y) < sqr(grabDistance) && generator.nextDouble() <= stealChance){
+							ballPossessor = i;
+						}
+					} else { //else, check if it's within grab range
+					
+						bearingToTarget =  Math.toDegrees(Math.atan2(ball.y - entity.y, ball.x - entity.x));
+						if(abs(angDisplacement(bearingToTarget, entity.bearing)) < grabArcLength && sqr(ball.x - entity.x) + sqr(ball.y - entity.y) < sqr(grabDistance)){
+							ballPossessor = i;
+						}
 					}
-				} else if(ballPossessor == i && chargeTime > 0){
+					
+				} else if(ballPossessor == i && chargeTime > 0){//if the clicking player already holds the ball, cancel any charge he holds
 					chargeCanceled = true;
 					chargeTime = 0;
 				}
