@@ -79,6 +79,7 @@ public class GameMechanics {
 	private final int chargeBaseForce=2000;
 	boolean chargeCanceled;
 
+	
 	//initialization
 	public void init(){
 		generator = new Random();

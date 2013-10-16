@@ -59,7 +59,14 @@ public class ClientStreamReader implements Runnable {
 					blueScore = inStream.readInt();
 					redScore = inStream.readInt();
 					goalPosition = inStream.readInt();
+					
+					Thread.sleep(15);
+					
+				}else{
+					Thread.sleep(2);	
 				}
+				
+				
 			} catch(Exception e){
 				e.printStackTrace();
 			}
