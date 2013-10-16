@@ -40,10 +40,16 @@ public class ServerDataListener implements Runnable {
 					 
 				}catch(Exception e){
 					e.printStackTrace();
-					 System.out.println(i);
+					System.out.println(i);
 				}
 				
 				
+			}
+			
+			try{
+				Thread.sleep(2);
+			} catch(Exception e){
+				e.printStackTrace();
 			}
 		}
 		
