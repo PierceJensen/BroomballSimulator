@@ -42,7 +42,7 @@ public class Entity extends GameMechanics{
 	
 	Random generator;
 	
-	private final double BALL_ELASTICITY=.35;
+	static final double BALL_ELASTICITY=.4;
 	
 	Entity(){
 		generator = new Random();

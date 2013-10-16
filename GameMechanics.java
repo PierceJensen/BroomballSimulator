@@ -55,8 +55,8 @@ public class GameMechanics {
 	public static int redScore;
 	public static int goalPosition;
 
-	final int[] playerStartX = {0, 1000, 2000, 1000, 0};
-	final int[] playerStartY = {3200, 3200, 2750, 2300, 2300};
+	final int[] playerStartX = {2500, 2500, 2500, 0, 0};
+	final int[] playerStartY = {2750, 5520, -80, 220, 5220};
 
 	ArrayList<Entity> playerList;
 	ArrayList<int[]> playerArrayList;
@@ -484,8 +484,8 @@ public class GameMechanics {
 		
 		ball.x = player.x - cos((int) theta)*(ball.size+player.size);
 		ball.y = player.y - sin((int) theta)*(ball.size+player.size);
-		ball.vx = .35*(ball.vx - 2*vDot*cos((int) theta));
-		ball.vy = .35*(ball.vy - 2*vDot*sin((int) theta));
+		ball.vx = Entity.BALL_ELASTICITY*(ball.vx - 2*vDot*cos((int) theta));
+		ball.vy = Entity.BALL_ELASTICITY*(ball.vy - 2*vDot*sin((int) theta));
 	}
 
 	public void twoBodyCollision(Entity e1, Entity e2){
