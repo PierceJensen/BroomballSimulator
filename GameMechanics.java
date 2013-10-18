@@ -82,6 +82,8 @@ public class GameMechanics {
 
 	int ballPossessor = -1;
 	double[] chargeTime;
+	double[] pushDelay;
+	
 	final static double maxChargeTime=1;
 	private final int chargeBaseForce=2000;
 	boolean[] chargeCanceled;
@@ -285,12 +287,16 @@ public class GameMechanics {
 			} else {
 				chargeCanceled[i] = false;
 			}
-			if(keyArray[i][KEY_SPACE]&&!pushOffBoundary.contains(playerList.get(i).x,playerList.get(i).y))
+			
+			if(keyArray[i][KEY_SPACE]&&!pushOffBoundary.contains(playerList.get(i).x,playerList.get(i).y)&&GameState.state==GameState.GAME_RUN)
 			{
 				System.out.println("ADDED PUSH");
 				playerList.get(i).ax+=playerList.get(i).applyForceX(100000, playerList.get(i).bearing);
 				playerList.get(i).ay+=playerList.get(i).applyForceY(100000, playerList.get(i).bearing);
 			}
+			
+			
+			
 			//updates every entity's position. also capable of removing the entity
 			if(entity.move(period)){
 				operateEntityList(AL_REMOVE, i, null);
