@@ -34,6 +34,9 @@ public class GameMechanics {
 
 	static Polygon[] corner;
 
+	static Polygon pushOffBoundary;
+
+	
 	static int colCount = 0;
 
 	public Point topLeftWaypoint;
@@ -86,6 +89,15 @@ public class GameMechanics {
 	
 	//initialization
 	public void init(){
+
+		int[] pointsX = {500,500,1000,1000};
+		int[] pointsY = {0,1000,1000,0};
+		
+		pushOffBoundary = new Polygon();
+		pushOffBoundary.npoints=pointsX.length;
+		pushOffBoundary.xpoints=pointsX;
+		pushOffBoundary.ypoints=pointsY;
+		
 		generator = new Random();
 
 		playerList = new ArrayList<Entity>();
@@ -117,6 +129,7 @@ public class GameMechanics {
 		//ordered counter-clockwise, starting from top-right
 		int[][] cornerPointsX = {{7000,7000,6200},{-200,-1000,-1000},{-1000,-1000,-200},{6200,7000,7000}};
 		int[][] cornerPointsY = {{4920,5720,5720},{5720,5720,4920},{1080,280,280},{280,280,1080}};
+			
 		for(int i=0;i<4;i++){
 			corner[i] = new Polygon();
 			corner[i].npoints = 3;
@@ -124,6 +137,8 @@ public class GameMechanics {
 			corner[i].ypoints = cornerPointsY[i];
 		}
 
+		
+		
 
 		//player init
 		for(int i=0; i<10; i++){
@@ -270,7 +285,12 @@ public class GameMechanics {
 			} else {
 				chargeCanceled[i] = false;
 			}
-
+			if(keyArray[i][KEY_SPACE]&&!pushOffBoundary.contains(playerList.get(i).x,playerList.get(i).y))
+			{
+				System.out.println("ADDED PUSH");
+				playerList.get(i).ax+=playerList.get(i).applyForceX(100000, playerList.get(i).bearing);
+				playerList.get(i).ay+=playerList.get(i).applyForceY(100000, playerList.get(i).bearing);
+			}
 			//updates every entity's position. also capable of removing the entity
 			if(entity.move(period)){
 				operateEntityList(AL_REMOVE, i, null);
