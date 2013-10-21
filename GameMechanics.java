@@ -59,7 +59,7 @@ public class GameMechanics {
 	public static int goalPosition;
 
 	final int[] playerStartX = {2500, 2500, 2500, 0, 0};
-	final int[] playerStartY = {2750, 5520, -80, 220, 5220};
+	final int[] playerStartY = {3010, 5520, -80, 220, 5220};
 
 	ArrayList<Entity> playerList;
 	ArrayList<int[]> playerArrayList;
@@ -168,13 +168,13 @@ public class GameMechanics {
 		//ball init
 		ball = new Entity();
 		ball.x = 3000;
-		ball.y = 2750;
+		ball.y = 3010;
 		ball.ballInit();
 		
 		//goalie init
 
-		blueGoalie = new Goalie(true/*isBlue*/, new Point(-1440, 420));
-		redGoalie = new Goalie(false, new Point(7420, 420));
+		blueGoalie = new Goalie(true/*isBlue*/, new Point(-1440, 3010));
+		redGoalie = new Goalie(false, new Point(7420, 3010));
 		
 		GameState.state=GameState.GAME_RUN;
 		GameState.period=1;
@@ -323,8 +323,10 @@ public class GameMechanics {
 		}
 		
 		//goalie physics/ai iteration
-		blueGoalie.goalieAI(ball, playerList);
-		redGoalie.goalieAI(ball, playerList);
+		blueGoalie.goalieAI(ball, playerList, ballPossessor);
+		blueGoalie.move(period);
+		redGoalie.goalieAI(ball, playerList, ballPossessor);
+		redGoalie.move(period);
 		
 		//////// RULE AREA ///
 
@@ -369,7 +371,7 @@ public class GameMechanics {
 				GameState.state=GameState.GAME_RUN;
 				ballPossessor = -1;
 				ball.x = 3000;
-				ball.y = 2750;
+				ball.y = 3010;
 				ball.vx = 0;
 				ball.vy = 0;	
 
@@ -455,6 +457,13 @@ public class GameMechanics {
 			}
 
 		}//end for loop 1
+		
+		//check for goalie<->ball collisions
+		if(sqr(blueGoalie.x - ball.x) + sqr(blueGoalie.y - ball.y) < sqr(blueGoalie.size + ball.size)){
+			ballGoalieCollision(blueGoalie);
+		} else if(sqr(redGoalie.x - ball.x) + sqr(redGoalie.y - ball.y) < sqr(redGoalie.size + ball.size)){
+			ballGoalieCollision(redGoalie);
+		}
 
 		/* building transmit array */
 		playerArray = new int[playerArrayList.size()][5];
@@ -580,18 +589,27 @@ public class GameMechanics {
 	public void ballPlayerCollision(Entity ball, Entity player){
 		double theta = Math.toDegrees(Math.atan2(player.y - ball.y, player.x - ball.x));
 		
-		//double bearing = Math.toDegrees(Math.atan2(ball.vy, ball.vx)); //from the old method of angle reflection
+		double nX = cos((int) theta);
+		double nY = sin((int) theta);
+		
+		double vDot = ball.vx*nX+ball.vy*nY;
+		
+		ball.x = player.x - cos((int) theta)*(ball.size+player.size);
+		ball.y = player.y - sin((int) theta)*(ball.size+player.size);
+		ball.vx = Entity.BALL_ELASTICITY*(ball.vx - 2*vDot*cos((int) theta));
+		ball.vy = Entity.BALL_ELASTICITY*(ball.vy - 2*vDot*sin((int) theta));
+	}
+	
+	public void ballGoalieCollision(Goalie g){//the same as above, but with a different argument
+		double theta = Math.toDegrees(Math.atan2(g.y - ball.y, g.x - ball.x));
 		
 		double nX = cos((int) theta);
 		double nY = sin((int) theta);
 		
 		double vDot = ball.vx*nX+ball.vy*nY;
 		
-		//double finalAngle = bearing-2*angDisplacement(-bearing,theta);
-		//double vMag = .35*Math.sqrt(sqr(ball.vx)+sqr(ball.vy));
-		
-		ball.x = player.x - cos((int) theta)*(ball.size+player.size);
-		ball.y = player.y - sin((int) theta)*(ball.size+player.size);
+		ball.x = g.x - cos((int) theta)*(ball.size+g.size);
+		ball.y = g.y - sin((int) theta)*(ball.size+g.size);
 		ball.vx = Entity.BALL_ELASTICITY*(ball.vx - 2*vDot*cos((int) theta));
 		ball.vy = Entity.BALL_ELASTICITY*(ball.vy - 2*vDot*sin((int) theta));
 	}
