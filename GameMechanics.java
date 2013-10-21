@@ -34,6 +34,9 @@ public class GameMechanics {
 
 	static Polygon[] corner;
 
+	static Polygon pushOffBoundary;
+
+	
 	static int colCount = 0;
 
 	public Point topLeftWaypoint;
@@ -61,6 +64,10 @@ public class GameMechanics {
 	ArrayList<Entity> playerList;
 	ArrayList<int[]> playerArrayList;
 	static int[][] playerArray;
+	
+	double interactDistance = 500;
+	double interactArc = 90;
+	double stealChance = .125;
 
 	Entity ball;
 	int[] ballArray;
@@ -74,17 +81,31 @@ public class GameMechanics {
 	boolean[][] keyArray;
 
 	int ballPossessor = -1;
-	double chargeTime;
+	double[] chargeTime;
+	double[] pushDelay;
+	
 	final static double maxChargeTime=1;
 	private final int chargeBaseForce=2000;
-	boolean chargeCanceled;
+	boolean[] chargeCanceled;
 
 	
 	//initialization
 	public void init(){
+
+		int[] pointsX = {500,500,1000,1000};
+		int[] pointsY = {0,1000,1000,0};
+		
+		pushOffBoundary = new Polygon();
+		pushOffBoundary.npoints=pointsX.length;
+		pushOffBoundary.xpoints=pointsX;
+		pushOffBoundary.ypoints=pointsY;
+		
 		generator = new Random();
 
 		playerList = new ArrayList<Entity>();
+		
+		chargeTime = new double[10];
+		chargeCanceled = new boolean[10];
 
 		/*build trigonometry tables*/
 		double toRadian = Math.PI/(180*trigScale);
@@ -110,6 +131,7 @@ public class GameMechanics {
 		//ordered counter-clockwise, starting from top-right
 		int[][] cornerPointsX = {{7000,7000,6200},{-200,-1000,-1000},{-1000,-1000,-200},{6200,7000,7000}};
 		int[][] cornerPointsY = {{4920,5720,5720},{5720,5720,4920},{1080,280,280},{280,280,1080}};
+			
 		for(int i=0;i<4;i++){
 			corner[i] = new Polygon();
 			corner[i].npoints = 3;
@@ -117,6 +139,8 @@ public class GameMechanics {
 			corner[i].ypoints = cornerPointsY[i];
 		}
 
+		
+		
 
 		//player init
 		for(int i=0; i<10; i++){
@@ -145,7 +169,9 @@ public class GameMechanics {
 		GameState.period=1;
 		GameState.periodLength=600;
 		GameState.numOfPeriods=3;
-		GameState.time=GameState.periodLength;//CRITICAL. SETS TIME TO PERIOD LENGTH BEFORE STARTING GAME
+		GameState.randomPlayerPositions = true;		
+		
+		GameState.time=GameState.periodLength;//CRITICAL. SETS TIME TO PERIOD LENGTH BEFORE STARTING GAME		
 	}//end initialization
 
 	//main entity operation method
@@ -202,36 +228,75 @@ public class GameMechanics {
 
 			//if a player clicks the right button, checks if that player can possess the ball
 			if(keyArray[i][KEY_RMOUSE]){
-				if(ballPossessor == -1){
-					bearingToTarget =  Math.toDegrees(Math.atan2(ball.y - entity.y, ball.x - entity.x));
-					if(abs(angDisplacement(bearingToTarget, entity.bearing)) < 90 && sqr(ball.x - entity.x) + sqr(ball.y - entity.y) < sqr(500)){
-						ballPossessor = i;
+				if(ballPossessor != i){//if the player is not holding the ball
+					
+					//if the ball is currently held by someone else, check if the player can steal
+					if(ballPossessor != -1){
+						
+						Entity holdingPlayer = operateEntityList(AL_READ, ballPossessor, null);
+						
+						double targetX = holdingPlayer.x + cos((int) holdingPlayer.bearing)*300;
+						double targetY = holdingPlayer.y + sin((int) holdingPlayer.bearing)*300;
+						
+						bearingToTarget =  Math.toDegrees(Math.atan2( targetY - entity.y, targetX - entity.x));
+						
+						if(abs(angDisplacement(bearingToTarget, entity.bearing)) < interactArc && sqr(targetX - entity.x)+sqr(targetY - entity.y) < sqr(interactDistance) && generator.nextDouble() <= stealChance){
+							ballPossessor = i;
+						}
+					} else { //else, check if it's within grab range
+					
+						bearingToTarget =  Math.toDegrees(Math.atan2(ball.y - entity.y, ball.x - entity.x));
+						if(abs(angDisplacement(bearingToTarget, entity.bearing)) < interactArc && sqr(ball.x - entity.x) + sqr(ball.y - entity.y) < sqr(interactDistance)){
+							ballPossessor = i;
+						}
 					}
-				} else if(ballPossessor == i && chargeTime > 0){
-					chargeCanceled = true;
-					chargeTime = 0;
+					
+				}
+				
+				if(chargeTime[i] > 0){//cancel any charge he holds
+					chargeCanceled[i] = true;
+					chargeTime[i] = 0;
 				}
 			}
 
-			//if a player possesses the ball an left clicks, shoot it
+			//if a player left clicks, charge up a shot
 			if(keyArray[i][KEY_LMOUSE]){
-				if(ballPossessor == i && !chargeCanceled &&chargeTime<maxChargeTime){
-					chargeTime += period;
+				if(!chargeCanceled[i] && chargeTime[i]<maxChargeTime){
+					
+					chargeTime[i] += period;
 				}
-			} else if(ballPossessor == i){//if the button is let go with a ball
-				if(chargeTime > 0){
+			} else if(chargeTime[i] > 0){//if the button is let go
+				if(ballPossessor == i){//if the player is holding the ball
 					ballPossessor = -1;
 					ball.x = entity.x + cos((int)entity.bearing)*300;
 					ball.y = entity.y + sin((int)entity.bearing)*300;
-					double shootVel= chargeBaseForce*(-Math.pow(chargeTime*(2/maxChargeTime),4)+4*Math.pow(chargeTime*(2/maxChargeTime),2)-.25*chargeTime*(2/maxChargeTime)+1);
+					double shootVel= chargeBaseForce*(-Math.pow(chargeTime[i]*(2/maxChargeTime),4)+4*Math.pow(chargeTime[i]*(2/maxChargeTime),2)-.25*chargeTime[i]*(2/maxChargeTime)+1);
 					ball.vx = cos((int)entity.bearing)*shootVel;
 					ball.vy = sin((int)entity.bearing)*shootVel;
-					chargeTime = 0;
-				} else {
-					chargeCanceled = false;
+				} else {//else if the player is within shooting range of the ball
+					
+					bearingToTarget =  Math.toDegrees(Math.atan2(ball.y - entity.y, ball.x - entity.x));
+					
+					if(abs(angDisplacement(bearingToTarget, entity.bearing)) < interactArc && sqr(ball.x - entity.x)+sqr(ball.y - entity.y) < sqr(interactDistance)){
+						double shootVel= chargeBaseForce*(-Math.pow(chargeTime[i]*(2/maxChargeTime),4)+4*Math.pow(chargeTime[i]*(2/maxChargeTime),2)-.25*chargeTime[i]*(2/maxChargeTime)+1);
+						ball.vx = cos((int)entity.bearing)*shootVel;
+						ball.vy = sin((int)entity.bearing)*shootVel;
+					}
 				}
+				chargeTime[i] = 0;
+			} else {
+				chargeCanceled[i] = false;
 			}
-
+			
+			if(keyArray[i][KEY_SPACE]&&!pushOffBoundary.contains(playerList.get(i).x,playerList.get(i).y)&&GameState.state==GameState.GAME_RUN)
+			{
+				System.out.println("ADDED PUSH");
+				playerList.get(i).ax+=playerList.get(i).applyForceX(100000, playerList.get(i).bearing);
+				playerList.get(i).ay+=playerList.get(i).applyForceY(100000, playerList.get(i).bearing);
+			}
+			
+			
+			
 			//updates every entity's position. also capable of removing the entity
 			if(entity.move(period)){
 				operateEntityList(AL_REMOVE, i, null);
@@ -384,19 +449,41 @@ public class GameMechanics {
 	}
 
 	void repositionPlayers (){
-		for(int i=0; i<10; i++){
-			Entity entity = operateEntityList(AL_READ, i, null);
+		if(!GameState.randomPlayerPositions){
+			for(int i=0; i<10; i++){
+				Entity entity = operateEntityList(AL_READ, i, null);
 
-			//team specific init
-			if(i<5){
-				entity.x = playerStartX[i];
-				entity.y = playerStartY[i];
-			} else {
-				entity.x = 6000 - playerStartX[i - 5];
-				entity.y = playerStartY[i - 5];
+				//team specific init
+				if(i<5){
+					entity.x = playerStartX[i];
+					entity.y = playerStartY[i];
+				} else {
+					entity.x = 6000 - playerStartX[i - 5];
+					entity.y = playerStartY[i - 5];
+				}
+				entity.vx=0;
+				entity.vy=0;
 			}
-			entity.vx=0;
-			entity.vy=0;
+		}else{
+			ArrayList<Integer> positions = new ArrayList<Integer>();
+			for(int i= 0; i<5; i++){
+				positions.add(i);	
+			}
+			Collections.shuffle(positions);
+			for(int i=0; i<10; i++){
+				Entity entity = operateEntityList(AL_READ, i, null);
+
+				//team specific init
+				if(i<5){
+					entity.x = playerStartX[positions.get(i)];
+					entity.y = playerStartY[positions.get(i)];
+				} else {
+					entity.x = 6000 - playerStartX[positions.get(i - 5)];
+					entity.y = playerStartY[positions.get(i-5)];
+				}
+				entity.vx=0;
+				entity.vy=0;
+			}
 		}
 	}	
 	//custom mathematical square function
@@ -607,7 +694,7 @@ public class GameMechanics {
 					streams[i].writeInt(ballArray[j]);
 				}
 				streams[i].writeInt(ballPossessor);
-				streams[i].writeDouble(chargeTime);
+				streams[i].writeDouble(chargeTime[i]);
 				streams[i].writeInt(GameState.blueScore);
 				streams[i].writeInt(GameState.redScore);
 				streams[i].writeInt(goalPosition);
