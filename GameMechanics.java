@@ -71,7 +71,12 @@ public class GameMechanics {
 
 	Entity ball;
 	int[] ballArray;
-
+	
+	Goalie blueGoalie;
+	int[] blueGoalieArray;
+	Goalie redGoalie;
+	int[] redGoalieArray;
+	
 	public Random generator;
 
 	public double period;
@@ -159,12 +164,18 @@ public class GameMechanics {
 			playerList.add(player);
 			player.playerInit();
 		}
-
+		
+		//ball init
 		ball = new Entity();
 		ball.x = 3000;
 		ball.y = 2750;
 		ball.ballInit();
+		
+		//goalie init
 
+		blueGoalie = new Goalie(true/*isBlue*/, new Point(-1440, 420));
+		redGoalie = new Goalie(false, new Point(7420, 420));
+		
 		GameState.state=GameState.GAME_RUN;
 		GameState.period=1;
 		GameState.periodLength=600;
@@ -305,10 +316,16 @@ public class GameMechanics {
 				playerArrayList.add(entityArray);
 			}
 		}//end entity loop
-
+		
+		//ball physics iteration
 		if(ballPossessor == -1){
 			ball.move(period);
 		}
+		
+		//goalie physics/ai iteration
+		blueGoalie.goalieAI(ball, playerList);
+		redGoalie.goalieAI(ball, playerList);
+		
 		//////// RULE AREA ///
 
 		//Time Stuff
@@ -446,6 +463,9 @@ public class GameMechanics {
 		}
 
 		ballArray = convertBallToArray(ball);
+		
+		blueGoalieArray = convertGoalieToArray(blueGoalie);
+		redGoalieArray = convertGoalieToArray(redGoalie);
 	}
 
 	void repositionPlayers (){
@@ -633,6 +653,17 @@ public class GameMechanics {
 		ball[2] = (int) e.bearing;
 		return ball;
 	}
+	
+	private int[] convertGoalieToArray(Goalie g){
+		int[] gAry = new int[4];
+		
+		gAry[0] = (int)g.x;
+		gAry[1] = (int)g.y;
+		gAry[2] = (int)g.bearing;
+		gAry[3] = 0;//unused atm
+		
+		return gAry;
+	}
 
 	//custom absolute value function
 	public double abs(double x){
@@ -692,6 +723,14 @@ public class GameMechanics {
 				//write ball info
 				for (int j=0;j<ballArray.length;j++){
 					streams[i].writeInt(ballArray[j]);
+				}
+				//write blue goalie info
+				for (int j=0;j<blueGoalieArray.length;j++){
+					streams[i].writeInt(blueGoalieArray[j]);
+				}
+				//write red goalie info
+				for (int j=0;j<redGoalieArray.length;j++){
+					streams[i].writeInt(redGoalieArray[j]);
 				}
 				streams[i].writeInt(ballPossessor);
 				streams[i].writeDouble(chargeTime[i]);

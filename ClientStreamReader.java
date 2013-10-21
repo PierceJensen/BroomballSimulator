@@ -16,6 +16,8 @@ public class ClientStreamReader implements Runnable {
 	
 	public int[][] playerArray;
 	public int[] ballArray;
+	public int[] blueGoalieArray;
+	public int[] redGoalieArray;
 	public int ballPossessor;
 	public double chargeTime;
 	public int blueScore;
@@ -33,6 +35,8 @@ public class ClientStreamReader implements Runnable {
 		}
 		
 		ballArray = new int[3];
+		blueGoalieArray = new int[4];
+		redGoalieArray = new int[4];
 		
 		//start the thread
 		Thread t = new Thread(this, "client stream reader");
@@ -52,6 +56,14 @@ public class ClientStreamReader implements Runnable {
 					
 					for(int i=0;i<3;i++){
 						ballArray[i] = inStream.readInt();
+					}
+					
+					for(int i=0;i<4;i++){
+						blueGoalieArray[i] = inStream.readInt();
+					}
+					
+					for(int i=0;i<4;i++){
+						redGoalieArray[i] = inStream.readInt();
 					}
 					
 					ballPossessor = inStream.readInt();

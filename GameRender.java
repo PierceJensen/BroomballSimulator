@@ -80,10 +80,11 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 
 	Random generator;
 	int ballPossessor;
-	int[] playership;
-	int[] displayedUnit;
+	
 	int[] ballArray;
-
+	int[] blueGoalieArray;
+	int[] redGoalieArray;
+	
 	int[][] playerArray;
 
 	int blueScore = 0;
@@ -241,6 +242,8 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		blueScore = recieveDataHandler.blueScore;
 		redScore = recieveDataHandler.redScore;
 		goalPosition = recieveDataHandler.goalPosition;
+		blueGoalieArray = recieveDataHandler.blueGoalieArray;
+		redGoalieArray = recieveDataHandler.redGoalieArray;
 	}
 
 	private void renderThings(Graphics2D g){
@@ -329,7 +332,45 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 			//draws the ball
 			g.drawImage(ballImage, xform, null);
 		}
+		
+		//draw goalies
+		
+		//blue
+		AffineTransform xform = new AffineTransform();
+		Image image = bluePlayer;
 
+		xform.translate(worldXToScreen(blueGoalieArray[0]), worldYToScreen(blueGoalieArray[1]));
+		xform.scale(400/(255*magnification), 400/(255*magnification));
+		xform.rotate(Math.toRadians(360 - blueGoalieArray[2]));
+		xform.translate(-(image.getWidth(null))/2, -(image.getHeight(null))/2);
+
+		//draws the entity
+		g.drawImage(image, xform, null);
+
+		//debug line
+		g.setColor(Color.RED);
+		g.drawLine(worldXToScreen(blueGoalieArray[0]), worldYToScreen(blueGoalieArray[1]), 
+				(int)worldXToScreen(blueGoalieArray[0] + cos(blueGoalieArray[2])*300),
+				(int)worldYToScreen(blueGoalieArray[1] + sin(blueGoalieArray[2])*300));
+
+		//red
+		xform = new AffineTransform();
+		image = redPlayer;
+
+		xform.translate(worldXToScreen(redGoalieArray[0]), worldYToScreen(redGoalieArray[1]));
+		xform.scale(400/(255*magnification), 400/(255*magnification));
+		xform.rotate(Math.toRadians(360 - redGoalieArray[2]));
+		xform.translate(-(image.getWidth(null))/2, -(image.getHeight(null))/2);
+
+		//draws the entity
+		g.drawImage(image, xform, null);
+
+		//debug line
+		g.setColor(Color.RED);
+		g.drawLine(worldXToScreen(redGoalieArray[0]), worldYToScreen(redGoalieArray[1]), 
+				(int)worldXToScreen(redGoalieArray[0] + cos(redGoalieArray[2])*300),
+				(int)worldYToScreen(redGoalieArray[1] + sin(redGoalieArray[2])*300));
+		
 		////////////////////////////
 		// SPLASH SCREEN CREATION //
 		////////////////////////////
