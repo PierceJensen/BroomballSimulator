@@ -96,14 +96,6 @@ public class GameMechanics {
 	
 	//initialization
 	public void init(){
-
-		int[] pointsX = {500,500,1000,1000};
-		int[] pointsY = {0,1000,1000,0};
-		
-		pushOffBoundary = new Polygon();
-		pushOffBoundary.npoints=pointsX.length;
-		pushOffBoundary.xpoints=pointsX;
-		pushOffBoundary.ypoints=pointsY;
 		
 		generator = new Random();
 
@@ -144,7 +136,29 @@ public class GameMechanics {
 			corner[i].ypoints = cornerPointsY[i];
 		}
 
+		int[] pointsX = {500,500,1000,1000};
+		int[] pointsY = {0,1000,1000,0};
+		final int BOUNDARY_SIZE = 100;
+		pushOffBoundary = new Polygon();
+		pushOffBoundary.npoints=8;
 		
+		float pushCosOffset = BOUNDARY_SIZE*cos[67];
+		float pushSinOffset = BOUNDARY_SIZE*sin[67];
+			pushOffBoundary.addPoint((int)( cornerPointsX[0][0]-pushCosOffset),(int)(  cornerPointsY[0][0]-pushSinOffset));
+			pushOffBoundary.addPoint((int)( cornerPointsX[0][2]-pushSinOffset),(int)(  cornerPointsY[0][2]-pushCosOffset));
+		
+			pushOffBoundary.addPoint((int)( cornerPointsX[1][0]+pushCosOffset),(int)(  cornerPointsY[1][0]-pushSinOffset));
+			pushOffBoundary.addPoint((int)( cornerPointsX[1][2]+pushSinOffset),(int)(  cornerPointsY[1][2]-pushCosOffset));
+		
+			pushOffBoundary.addPoint((int)( cornerPointsX[2][0]+pushCosOffset),(int)(  cornerPointsY[2][0]+pushSinOffset));
+			pushOffBoundary.addPoint((int)( cornerPointsX[2][2]+pushSinOffset),(int)(  cornerPointsY[2][2]+pushCosOffset));
+		
+			pushOffBoundary.addPoint((int)( cornerPointsX[3][0]-pushCosOffset),(int)(  cornerPointsY[3][0]+pushSinOffset));
+			pushOffBoundary.addPoint((int)( cornerPointsX[3][2]-pushSinOffset),(int)(  cornerPointsY[3][2]+pushCosOffset));
+		
+		//pushOffBoundary.npoints=pointsX.length;
+		//pushOffBoundary.xpoints=pointsX;
+		//pushOffBoundary.ypoints=pointsY;
 		
 
 		//player init
@@ -323,8 +337,8 @@ public class GameMechanics {
 		}
 		
 		//goalie physics/ai iteration
-		blueGoalie.goalieAI(ball, playerList);
-		redGoalie.goalieAI(ball, playerList);
+		blueGoalie.goalieAI(ball, playerList, ballPossessor);
+		redGoalie.goalieAI(ball, playerList, ballPossessor);
 		
 		//////// RULE AREA ///
 
