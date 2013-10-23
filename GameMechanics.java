@@ -87,7 +87,10 @@ public class GameMechanics {
 
 	int ballPossessor = -1;
 	double[] chargeTime;
+	
 	double[] pushDelay;
+	final double PUSH_RECHARGE_TIME = 3;
+	final int PUSH_FORCE = 125000;
 	
 	final static double maxChargeTime=1;
 	private final int chargeBaseForce=2000;
@@ -96,14 +99,6 @@ public class GameMechanics {
 	
 	//initialization
 	public void init(){
-
-		int[] pointsX = {500,500,1000,1000};
-		int[] pointsY = {0,1000,1000,0};
-		
-		pushOffBoundary = new Polygon();
-		pushOffBoundary.npoints=pointsX.length;
-		pushOffBoundary.xpoints=pointsX;
-		pushOffBoundary.ypoints=pointsY;
 		
 		generator = new Random();
 
@@ -111,7 +106,8 @@ public class GameMechanics {
 		
 		chargeTime = new double[10];
 		chargeCanceled = new boolean[10];
-
+		pushDelay = new double[10];
+		
 		/*build trigonometry tables*/
 		double toRadian = Math.PI/(180*trigScale);
 		//sine
@@ -144,7 +140,17 @@ public class GameMechanics {
 			corner[i].ypoints = cornerPointsY[i];
 		}
 
+		final int BOUNDARY_SIZE = Entity.PLAYER_SIZE + 50;
 		
+		int pushCosOffset = (int) (BOUNDARY_SIZE*cos[67]);
+		int pushSinOffset = (int) (BOUNDARY_SIZE*sin[67]);
+	
+		int[] pointsX = {cornerPointsX[0][0]-pushSinOffset,cornerPointsX[0][2]-pushCosOffset,cornerPointsX[1][0]+pushCosOffset,cornerPointsX[1][2]+pushSinOffset,cornerPointsX[2][0]+pushSinOffset,cornerPointsX[2][2]+pushCosOffset,cornerPointsX[3][0]-pushCosOffset,cornerPointsX[3][2]-pushSinOffset};
+		int[] pointsY = {cornerPointsY[0][0]-pushCosOffset,cornerPointsY[0][2]-pushSinOffset,cornerPointsY[1][0]-pushSinOffset,cornerPointsY[1][2]-pushCosOffset,cornerPointsY[2][0]+pushCosOffset,cornerPointsY[2][2]+pushSinOffset,cornerPointsY[3][0]+pushSinOffset,cornerPointsY[3][2]+pushCosOffset};
+		pushOffBoundary = new Polygon();
+		pushOffBoundary.npoints=pointsX.length;
+		pushOffBoundary.xpoints=pointsX;
+		pushOffBoundary.ypoints=pointsY;
 		
 
 		//player init
@@ -299,11 +305,13 @@ public class GameMechanics {
 				chargeCanceled[i] = false;
 			}
 			
-			if(keyArray[i][KEY_SPACE]&&!pushOffBoundary.contains(playerList.get(i).x,playerList.get(i).y)&&GameState.state==GameState.GAME_RUN)
-			{
-				System.out.println("ADDED PUSH");
-				playerList.get(i).ax+=playerList.get(i).applyForceX(100000, playerList.get(i).bearing);
-				playerList.get(i).ay+=playerList.get(i).applyForceY(100000, playerList.get(i).bearing);
+			if(keyArray[i][KEY_SPACE]&&!pushOffBoundary.contains(playerList.get(i).x,playerList.get(i).y)&&GameState.state==GameState.GAME_RUN&&pushDelay[i]<=0){
+				playerList.get(i).ax+=playerList.get(i).applyForceX(PUSH_FORCE, playerList.get(i).bearing);
+				playerList.get(i).ay+=playerList.get(i).applyForceY(PUSH_FORCE, playerList.get(i).bearing);
+				pushDelay[i]=PUSH_RECHARGE_TIME;
+			}
+			if(pushDelay[i]>0&&!keyArray[i][KEY_SPACE]){
+				pushDelay[i]-=period;
 			}
 			
 			
@@ -327,6 +335,7 @@ public class GameMechanics {
 		blueGoalie.move(period);
 		redGoalie.goalieAI(ball, playerList, ballPossessor);
 		redGoalie.move(period);
+
 		
 		//////// RULE AREA ///
 
