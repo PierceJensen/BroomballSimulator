@@ -3,7 +3,7 @@
 import java.util.Random;
 
 public class Entity extends GameMechanics{
-	
+	static final int PLAYER_SIZE= 200;
 	double x;//position
 	double y;//--------
 	double preX = 0;
@@ -52,7 +52,7 @@ public class Entity extends GameMechanics{
 	public void playerInit(){
 		this.linFriction = 250;
 		this.radFriction = 100;
-		this.size = 200;
+		this.size = PLAYER_SIZE;
 		this.type = 0;
 		this.maxRadSpeed = 100;
 		this.maxlinSpeed = 1000;
