@@ -89,15 +89,17 @@ public class Entity extends GameMechanics{
 		
 		if(sqr(this.vx) + sqr(this.vy) < sqr(this.maxlinSpeed)){
 			//forward motion
-			if(this.walking){
+			if(this.walking && !this.sideWalking){
 				this.ax += this.applyForceX(this.walkDirection*this.walkForce*period, this.bearing);
 				this.ay += this.applyForceY(this.walkDirection*this.walkForce*period, this.bearing);
-			}
-			
-			//strafing
-			if(this.sideWalking){
+			} else if(this.sideWalking && !this.walking){//strafing
 				this.ax += this.applyForceX(this.sideWalkDirection*this.sideWalkForce*period, this.bearing + 90);
 				this.ay += this.applyForceY(this.sideWalkDirection*this.sideWalkForce*period, this.bearing + 90);
+			} else if(this.sideWalking && this.walking){
+				this.ax += this.applyForceX((this.sideWalkForce+this.walkForce)*.5*period, 
+						this.bearing*this.walkDirection + 45*this.sideWalkDirection);
+				this.ay += this.applyForceY((this.sideWalkForce+this.walkForce)*.5*period, 
+						this.bearing*this.walkDirection + 45*this.sideWalkDirection);
 			}
 		}
 		

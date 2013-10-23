@@ -45,7 +45,8 @@ public class TcpListener implements Runnable{
 				e.printStackTrace();
 			}
 		}
-			for(int i=0;i<clients.length;i++){//close all connections
+		
+		for(int i=0;i<clients.length;i++){//close all connections
 			try {
 				clients[i].close();
 			} catch(Exception e){}

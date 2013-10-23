@@ -317,16 +317,16 @@ public class GameMechanics {
 			}
 		}//end entity loop
 		
-		//ball physics iteration
-		if(ballPossessor == -1){
-			ball.move(period);
-		}
-		
 		//goalie physics/ai iteration
 		blueGoalie.goalieAI(ball, playerList, ballPossessor);
 		blueGoalie.move(period);
 		redGoalie.goalieAI(ball, playerList, ballPossessor);
 		redGoalie.move(period);
+				
+		//ball physics iteration
+		if(ballPossessor == -1){
+			ball.move(period);
+		}
 		
 		//////// RULE AREA ///
 
