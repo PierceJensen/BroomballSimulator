@@ -323,18 +323,18 @@ public class GameMechanics {
 			} else {
 				playerArrayList.add(entityArray);
 			}
-		}//end entity loop
-		
-		//goalie physics/ai iteration
-		blueGoalie.goalieAI(ball, playerList, ballPossessor);
-		blueGoalie.move(period);
-		redGoalie.goalieAI(ball, playerList, ballPossessor);
-		redGoalie.move(period);
+		}//end entity loop		
 				
 		//ball physics iteration
 		if(ballPossessor == -1){
 			ball.move(period);
 		}
+		
+		//goalie physics/ai iteration
+				blueGoalie.goalieAI(ball, playerList, ballPossessor);
+				blueGoalie.move(period);
+				redGoalie.goalieAI(ball, playerList, ballPossessor);
+				redGoalie.move(period);
 	
 		//////// RULE AREA ///
 
@@ -468,9 +468,9 @@ public class GameMechanics {
 		
 		//check for goalie<->ball collisions
 		if(sqr(blueGoalie.x - ball.x) + sqr(blueGoalie.y - ball.y) < sqr(blueGoalie.size + ball.size)){
-			ballGoalieCollision(blueGoalie);
+			ballGoalieCollision(ball, blueGoalie);
 		} else if(sqr(redGoalie.x - ball.x) + sqr(redGoalie.y - ball.y) < sqr(redGoalie.size + ball.size)){
-			ballGoalieCollision(redGoalie);
+			ballGoalieCollision(ball, redGoalie);
 		}
 
 		/* building transmit array */
@@ -608,7 +608,7 @@ public class GameMechanics {
 		ball.vy = Entity.BALL_ELASTICITY*(ball.vy - 2*vDot*sin((int) theta));
 	}
 	
-	public void ballGoalieCollision(Goalie g){//the same as above, but with a different argument
+	public void ballGoalieCollision(Entity ball, Goalie g){//the same as above, but with a different argument
 		double theta = Math.toDegrees(Math.atan2(g.y - ball.y, g.x - ball.x));
 		
 		double nX = cos((int) theta);

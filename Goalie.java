@@ -17,7 +17,7 @@ public class Goalie {
 	
 	double targetY;
 	
-	double size = 50;
+	double size = 200;
 	
 	Point rayOrigin;
 	
@@ -29,10 +29,10 @@ public class Goalie {
 		rayOrigin = rayStart;
 		
 		if(isBlue){
-			this.x = -1000+this.size*2;
+			this.x = -1000+this.size;
 			this.y = 3010;
 		}else{
-			this.x = 7000-this.size*2;
+			this.x = 7000-this.size;
 			this.y = 3010;
 			this.bearing = 180;
 			
