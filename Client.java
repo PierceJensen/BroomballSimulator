@@ -1,9 +1,12 @@
 //This class manages the client-side of the game Client stateflow is managed by the while->switch loop.
 //It is also capable of starting a new server instance.
 //This is another test comment
+import java.awt.Color;
 import java.awt.DisplayMode;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 
 public class Client extends Thread {
@@ -160,6 +163,7 @@ public class Client extends Thread {
 			sock.close();
 		} catch(Exception e){
 			if(e instanceof UnknownHostException){
+				
 				errorCode = JOIN_UNKNOWNHOST;
 			}else{
 				e.printStackTrace();

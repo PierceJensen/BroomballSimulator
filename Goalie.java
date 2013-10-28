@@ -23,9 +23,15 @@ public class Goalie {
 	
 	boolean isBlue;
 	boolean holdingBall;
+	boolean isLeft;
 	
+	final int PROJECTION_X_LEFT =-800;
+	final int PROJECTION_X_RIGHT=6800;
+	final int PROJECTION_Y_TOP = 3430;
+	final int PROJECTION_Y_BOTTOM = 2590;
 	Goalie(boolean team, Point rayStart){
 		isBlue = team;
+		isLeft = team;
 		rayOrigin = rayStart;
 		
 		if(isBlue){
@@ -45,14 +51,63 @@ public class Goalie {
 		double y0 = rayOrigin.y;
 		double x1 = 0;
 		double y1 = 0;
+		double vx = 0;
+		double vy = 0;
+		double ballBearing = 0;
+		
+		
 		if(ballPossessor != -1){
 			x1 = playerList.get(ballPossessor).x;
 			y1 = playerList.get(ballPossessor).y;
+			
+			vx = playerList.get(ballPossessor).vx;
+			vy = playerList.get(ballPossessor).vy;
+			
+			ballBearing = Math.toDegrees(Math.atan2(vy,vx));
 		}else{
 			x1 = ball.x;
 			y1 = ball.y;
+			
+			vx = ball.vx;
+			vy =ball.vy;
+			
+			ballBearing = Math.toDegrees(Math.atan2(vy,vx));
 		}
-		
+		//Velocity Ray Trace Method
+		double projectedYLeft=    Math.cos(Math.toRadians(ballBearing))*(PROJECTION_X_LEFT-x1)-y1;
+		double	projectedYRight=  Math.cos(Math.toRadians(ballBearing))*(PROJECTION_X_RIGHT-x1)-y1;
+		if(vx!=0 | vy!=0){
+			if(this.isLeft){
+				if(projectedYLeft<PROJECTION_Y_TOP&&projectedYLeft>PROJECTION_Y_BOTTOM){
+					System.out.println("Aiming at Left Goal");
+					this.targetY = projectedYLeft;
+
+					if(this.targetY > this.y){
+						this.vy = this.walkSpeed;
+					} else if(targetY < this.y) {
+						this.vy = -this.walkSpeed;
+					} else {
+						this.vy = 0;
+					}
+					return;
+				}
+			}else{
+				if(projectedYRight<PROJECTION_Y_TOP&&projectedYRight>PROJECTION_Y_BOTTOM){
+					System.out.println("Aiming at Right Goal");
+					this.targetY = projectedYRight;
+
+					if(this.targetY > this.y){
+						this.vy = this.walkSpeed;
+					} else if(targetY < this.y) {
+						this.vy = -this.walkSpeed;
+					} else {
+						this.vy = 0;
+					}
+					return;
+				}
+			}
+		}
+		//CENTER RAY TRACE METHOD
 		this.targetY = this.x*(y1-y0)/(x1-x0)+(x1*y0-x0*y1)/(x1-x0);
 		
 		if(this.targetY > this.y){
@@ -83,5 +138,9 @@ public class Goalie {
 		
 		this.y = Math.min(this.y, 3430-this.size);
 		this.y = Math.max(this.y, 2590+this.size);
+	}
+	
+	public void swapSides(){
+		this.isLeft=!this.isLeft;
 	}
 }

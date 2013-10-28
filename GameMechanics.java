@@ -314,8 +314,6 @@ public class GameMechanics {
 				pushDelay[i]-=period;
 			}
 			
-			
-			
 			//updates every entity's position. also capable of removing the entity
 			if(entity.move(period)){
 				operateEntityList(AL_REMOVE, i, null);
