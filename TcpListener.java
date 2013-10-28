@@ -11,6 +11,8 @@ public class TcpListener implements Runnable{
 	ObjectOutputStream[] streams;
 	ServerDataListener dataHandler;
 	
+	Thread t;
+	
 	boolean running = true;
 
 	public TcpListener(ServerDataListener dataListen) {
@@ -18,7 +20,7 @@ public class TcpListener implements Runnable{
 		streams = new ObjectOutputStream[10];
 		dataHandler = dataListen;
 		
-		Thread t = new Thread(this, "tcp listener");
+		t = new Thread(this, "tcp listener");
 		
 		try{
 			servSock = new ServerSocket(13337);
@@ -42,9 +44,13 @@ public class TcpListener implements Runnable{
 				addClientToList(sock);
 				
 			} catch (Exception e) {
-				e.printStackTrace();
+				if(!(e instanceof InterruptedException)){
+					e.printStackTrace();
+				}
 			}
 		}
+		
+		System.out.println("TcpListener exit");
 		
 		for(int i=0;i<clients.length;i++){//close all connections
 			try {

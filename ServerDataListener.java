@@ -40,7 +40,6 @@ public class ServerDataListener implements Runnable {
 					 
 				}catch(Exception e){
 					e.printStackTrace();
-					System.out.println(i);
 				}
 				
 				
@@ -52,6 +51,8 @@ public class ServerDataListener implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		
+		System.out.println("ServerDataListener exit");
 		
 		for(int i=0;i<10;i++){
 			try{

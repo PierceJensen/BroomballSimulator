@@ -9,6 +9,8 @@ import java.net.*;
 public class Client extends Thread {
 	public static void main(String[] args){
 		new Client().init();
+		
+		System.out.println("Client exit");
 	}
 	ScreenManager sm;
 	
@@ -129,7 +131,6 @@ public class Client extends Thread {
 		
 		//end server
 		gameServer.stop();
-		gameServer.timer.cancel();
 		
 	}
 	

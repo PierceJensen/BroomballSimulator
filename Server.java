@@ -43,6 +43,17 @@ class Server extends TimerTask {
 			public void run() {
 				
 				gameLoop();
+				
+				if(!running){
+					clientListen.running = false;
+					clientListen.t.interrupt();
+					dataListen.running = false;
+					
+					System.out.println("Server Exit");
+					
+					timer.cancel();
+					timer.purge();
+				}
 			}
 		}, 0, (long) (1000*period));
 	}
@@ -54,8 +65,6 @@ class Server extends TimerTask {
 	//main gameLoop
 	void gameLoop(){
 		if(!running){
-			clientListen.running = false;
-			dataListen.running = false;
 			return;
 		}
 		
