@@ -130,7 +130,7 @@ public class Client extends Thread {
 		}
 		
 		//end server
-		gameServer.stop();
+		gameServer.serverStop();
 		
 	}
 	

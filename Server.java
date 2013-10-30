@@ -38,28 +38,27 @@ class Server extends TimerTask {
 	
 	//start the gameloop
 	public void startLoops(){
-		timer = new Timer();	
-		new Timer().schedule(new TimerTask() {	
+		timer = new Timer();
+		new Timer().scheduleAtFixedRate(new TimerTask() {	
 			public void run() {
 				
 				gameLoop();
 				
 				if(!running){
-					clientListen.running = false;
-					clientListen.t.interrupt();
-					dataListen.running = false;
 					
-					System.out.println("Server Exit");
-					
-					timer.cancel();
-					timer.purge();
+					System.out.println("Error! timertask still running!");
 				}
 			}
 		}, 0, (long) (1000*period));
 	}
 	
-	public void stop(){
+	public void serverStop(){
 		running = false;
+		clientListen.running = false;
+		clientListen.t.interrupt();
+		dataListen.running = false;
+		
+		System.out.println("Server Exit");
 	}
 	
 	//main gameLoop
