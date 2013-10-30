@@ -74,11 +74,22 @@ public class Goalie {
 			ballBearing = Math.toDegrees(Math.atan2(vy,vx));
 		}
 		//Velocity Ray Trace Method
-		double projectedYLeft=    Math.cos(Math.toRadians(ballBearing))*(PROJECTION_X_LEFT-x1)-y1;
-		double	projectedYRight=  Math.cos(Math.toRadians(ballBearing))*(PROJECTION_X_RIGHT-x1)-y1;
-		if(vx!=0 | vy!=0){
+		if(ballBearing<0)
+			ballBearing+=180;
+		
+		double projectedYLeft=    Math.sin(Math.toRadians(ballBearing))*(PROJECTION_X_LEFT-x1)+y1;
+		double	projectedYRight=  Math.sin(Math.toRadians(ballBearing))*(PROJECTION_X_RIGHT-x1)+y1;
+		
+		if(vx!=0&&vy!=0){
+		System.out.println("Ball bearing: "+ballBearing);//+";    Left: "+projectedYLeft+";    Right: "+projectedYRight + ";   Ball: "+x1+","+y1);
+		}
+		
+	double theta = Math.toDegrees(Math.atan2(y1-y0,x1-x0));
+		
+		this.bearing = theta;
+		
 			if(this.isLeft){
-				if(projectedYLeft<PROJECTION_Y_TOP&&projectedYLeft>PROJECTION_Y_BOTTOM){
+				if(projectedYLeft<PROJECTION_Y_TOP&&projectedYLeft>PROJECTION_Y_BOTTOM&&vx<0){
 					System.out.println("Aiming at Left Goal");
 					this.targetY = projectedYLeft;
 
@@ -92,7 +103,7 @@ public class Goalie {
 					return;
 				}
 			}else{
-				if(projectedYRight<PROJECTION_Y_TOP&&projectedYRight>PROJECTION_Y_BOTTOM){
+				if(projectedYRight<PROJECTION_Y_TOP&&projectedYRight>PROJECTION_Y_BOTTOM&&vx>0){
 					System.out.println("Aiming at Right Goal");
 					this.targetY = projectedYRight;
 
@@ -106,7 +117,7 @@ public class Goalie {
 					return;
 				}
 			}
-		}
+		
 		//CENTER RAY TRACE METHOD
 		this.targetY = this.x*(y1-y0)/(x1-x0)+(x1*y0-x0*y1)/(x1-x0);
 		
@@ -118,9 +129,7 @@ public class Goalie {
 			this.vy = 0;
 		}
 		
-		double theta = Math.toDegrees(Math.atan2(y1-y0,x1-x0));
-		
-		this.bearing = theta;
+	
 		
 	}
 	
