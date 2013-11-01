@@ -353,6 +353,18 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 				(int)worldXToScreen(blueGoalieArray[0] + cos(blueGoalieArray[2])*300),
 				(int)worldYToScreen(blueGoalieArray[1] + sin(blueGoalieArray[2])*300));
 
+		if(ballPossessor == Goalie.blueGoaliePossession) {
+			xform = new AffineTransform();
+
+			xform.translate(worldXToScreen(blueGoalieArray[0] + cos(blueGoalieArray[2])*300), worldYToScreen(blueGoalieArray[1] + sin(blueGoalieArray[2])*300));
+			xform.scale(400/(255*magnification), 400/(255*magnification));
+			xform.translate(-(ballImage.getWidth(null))/2, -(ballImage.getHeight(null))/2);
+
+			//draws the ball
+			g.drawImage(ballImage, xform, null);
+		}
+		
+		
 		//red
 		xform = new AffineTransform();
 		image = redPlayer;
@@ -370,6 +382,18 @@ public class GameRender implements MouseMotionListener, MouseListener, MouseWhee
 		g.drawLine(worldXToScreen(redGoalieArray[0]), worldYToScreen(redGoalieArray[1]), 
 				(int)worldXToScreen(redGoalieArray[0] + cos(redGoalieArray[2])*300),
 				(int)worldYToScreen(redGoalieArray[1] + sin(redGoalieArray[2])*300));
+		
+		if(ballPossessor == Goalie.redGoaliePossession) {
+			xform = new AffineTransform();
+
+			xform.translate(worldXToScreen(redGoalieArray[0] + cos(redGoalieArray[2])*300), worldYToScreen(redGoalieArray[1] + sin(redGoalieArray[2])*300));
+			xform.scale(400/(255*magnification), 400/(255*magnification));
+			xform.translate(-(ballImage.getWidth(null))/2, -(ballImage.getHeight(null))/2);
+
+			//draws the ball
+			g.drawImage(ballImage, xform, null);
+		}
+		
 		
 		////////////////////////////
 		// SPLASH SCREEN CREATION //

@@ -25,6 +25,9 @@ public class Goalie {
 	boolean holdingBall;
 	boolean isLeft;
 	
+	static final int blueGoaliePossession = 12;
+	static final int redGoaliePossession = 11;
+	
 	final int PROJECTION_X_LEFT =-800;
 	final int PROJECTION_X_RIGHT=6800;
 	final int PROJECTION_Y_TOP = 3430;
@@ -45,7 +48,7 @@ public class Goalie {
 		}
 	}
 	
-	public void goalieAI(Entity ball, ArrayList<Entity> playerList, int ballPossessor){
+	public int goalieAI(Entity ball, ArrayList<Entity> playerList, int ballPossessor){
 		//draw a ray trace from the center of the back of the goal to the ball, find where the goalie should be
 		double x0 = rayOrigin.x;
 		double y0 = rayOrigin.y;
@@ -55,8 +58,17 @@ public class Goalie {
 		double vy = 0;
 		double ballBearing = 0;
 		
-		
-		if(ballPossessor != -1){
+		if(inMyPossession(ballPossessor)){
+			this.bearing= 180;
+			ballPossessor = -1;
+			ball.x = this.x + Math.cos(Math.toRadians(this.bearing))*500;
+			ball.y = this.y + Math.sin(Math.toRadians(this.bearing))*500;
+			ball.vx = Math.cos(Math.toRadians(this.bearing))*1000;
+			ball.vy = Math.sin(Math.toRadians(this.bearing))*1000;
+				
+			return ballPossessor;
+		}
+		if(ballPossessor != -1 && !inGoaliePossession(ballPossessor)){
 			x1 = playerList.get(ballPossessor).x;
 			y1 = playerList.get(ballPossessor).y;
 			
@@ -80,9 +92,6 @@ public class Goalie {
 		double projectedYLeft=    Math.sin(Math.toRadians(ballBearing))*(PROJECTION_X_LEFT-x1)+y1;
 		double	projectedYRight=  Math.sin(Math.toRadians(ballBearing))*(PROJECTION_X_RIGHT-x1)+y1;
 		
-		if(vx!=0&&vy!=0){
-		System.out.println("Ball bearing: "+ballBearing);//+";    Left: "+projectedYLeft+";    Right: "+projectedYRight + ";   Ball: "+x1+","+y1);
-		}
 		
 	double theta = Math.toDegrees(Math.atan2(y1-y0,x1-x0));
 		
@@ -90,7 +99,6 @@ public class Goalie {
 		
 			if(this.isLeft){
 				if(projectedYLeft<PROJECTION_Y_TOP&&projectedYLeft>PROJECTION_Y_BOTTOM&&vx<0){
-					System.out.println("Aiming at Left Goal");
 					this.targetY = projectedYLeft;
 
 					if(this.targetY > this.y){
@@ -100,11 +108,10 @@ public class Goalie {
 					} else {
 						this.vy = 0;
 					}
-					return;
+					return ballPossessor;
 				}
 			}else{
 				if(projectedYRight<PROJECTION_Y_TOP&&projectedYRight>PROJECTION_Y_BOTTOM&&vx>0){
-					System.out.println("Aiming at Right Goal");
 					this.targetY = projectedYRight;
 
 					if(this.targetY > this.y){
@@ -114,7 +121,7 @@ public class Goalie {
 					} else {
 						this.vy = 0;
 					}
-					return;
+					return ballPossessor;
 				}
 			}
 		
@@ -129,7 +136,7 @@ public class Goalie {
 			this.vy = 0;
 		}
 		
-	
+		return ballPossessor;
 		
 	}
 	
@@ -151,5 +158,17 @@ public class Goalie {
 	
 	public void swapSides(){
 		this.isLeft=!this.isLeft;
+	}
+	static public boolean inGoaliePossession(int possessor){
+		return possessor==blueGoaliePossession || possessor==redGoaliePossession;
+	}
+	private boolean inMyPossession(int possessor){
+		if(possessor == redGoaliePossession && !this.isBlue){
+			return true;
+		}else if(possessor == blueGoaliePossession && this.isBlue){
+			return true;
+		}
+		return false;
+		
 	}
 }

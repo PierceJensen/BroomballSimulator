@@ -248,7 +248,7 @@ public class GameMechanics {
 				if(ballPossessor != i){//if the player is not holding the ball
 					
 					//if the ball is currently held by someone else, check if the player can steal
-					if(ballPossessor != -1){
+					if(ballPossessor != -1&& !Goalie.inGoaliePossession(ballPossessor)){
 						
 						Entity holdingPlayer = operateEntityList(AL_READ, ballPossessor, null);
 						
@@ -329,9 +329,9 @@ public class GameMechanics {
 		}
 		
 		//goalie physics/ai iteration
-				blueGoalie.goalieAI(ball, playerList, ballPossessor);
+				ballPossessor = blueGoalie.goalieAI(ball, playerList, ballPossessor);
 				blueGoalie.move(period);
-				redGoalie.goalieAI(ball, playerList, ballPossessor);
+				ballPossessor = redGoalie.goalieAI(ball, playerList, ballPossessor);
 				redGoalie.move(period);
 	
 		//////// RULE AREA ///
