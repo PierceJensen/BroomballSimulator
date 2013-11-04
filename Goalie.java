@@ -32,6 +32,9 @@ public class Goalie {
 	final int PROJECTION_X_RIGHT=6800;
 	final int PROJECTION_Y_TOP = 3430;
 	final int PROJECTION_Y_BOTTOM = 2590;
+	
+	final double GOALIE_INTERACTION_DIST = 500;
+	
 	Goalie(boolean team, Point rayStart){
 		isBlue = team;
 		isLeft = team;
@@ -58,16 +61,6 @@ public class Goalie {
 		double vy = 0;
 		double ballBearing = 0;
 		
-		if(inMyPossession(ballPossessor)){
-			this.bearing= 180;
-			ballPossessor = -1;
-			ball.x = this.x + Math.cos(Math.toRadians(this.bearing))*500;
-			ball.y = this.y + Math.sin(Math.toRadians(this.bearing))*500;
-			ball.vx = Math.cos(Math.toRadians(this.bearing))*1000;
-			ball.vy = Math.sin(Math.toRadians(this.bearing))*1000;
-				
-			return ballPossessor;
-		}
 		if(ballPossessor != -1 && !inGoaliePossession(ballPossessor)){
 			x1 = playerList.get(ballPossessor).x;
 			y1 = playerList.get(ballPossessor).y;
@@ -85,6 +78,33 @@ public class Goalie {
 			
 			ballBearing = Math.toDegrees(Math.atan2(vy,vx));
 		}
+		
+		if(inMyPossession(ballPossessor)){
+			Entity temp = this.findClosestPlayer(playerList);
+			this.bearing=  Math.toDegrees(Math.atan2(temp.y-this.y,temp.x-this.x));
+			this.targetY = this.x*(temp.y-y0)/(temp.x-x0)+(temp.x*y0-x0*temp.y)/(temp.x-x0);
+			
+			if(this.targetY > this.y+5){
+				this.vy = this.walkSpeed;
+			} else if(targetY < this.y-5) {
+				this.vy = -this.walkSpeed;
+			} else {
+				this.vy = 0;
+				ballPossessor = -1;
+				ball.x = this.x + Math.cos(Math.toRadians(this.bearing))*500;
+				ball.y = this.y + Math.sin(Math.toRadians(this.bearing))*500;
+				ball.vx = Math.cos(Math.toRadians(this.bearing))*10000;
+				ball.vy = Math.sin(Math.toRadians(this.bearing))*10000;
+			}
+			return ballPossessor;
+		}else if(sqr(x1 - this.x) + sqr(y1 - this.y) < sqr(GOALIE_INTERACTION_DIST)){
+			if (this.isBlue){
+				ballPossessor = Goalie.blueGoaliePossession;
+			}else{
+				ballPossessor = Goalie.redGoaliePossession;
+			}
+		}
+		
 		//Velocity Ray Trace Method
 		if(ballBearing<0)
 			ballBearing+=180;
@@ -139,6 +159,29 @@ public class Goalie {
 		return ballPossessor;
 		
 	}
+	private Entity findClosestPlayer(ArrayList<Entity>players){
+		Entity closest;
+		if(this.isBlue){
+			closest = players.get(0);
+			for(int i = 0; i < 5; i ++){
+				Entity ent = players.get(i);
+			
+				if(sqr(ent.x-this.x)+sqr(ent.y-this.y)<sqr(closest.x-this.x)+sqr(closest.y-this.y)){
+					closest=ent;	
+				}
+			}
+		}else{
+			closest = players.get(5);
+			for(int i = 5; i < 10; i ++){
+				Entity ent = players.get(i);
+			
+				if(sqr(ent.x-this.x)+sqr(ent.y-this.y)<sqr(closest.x-this.x)+sqr(closest.y-this.y)){
+					closest=ent;	
+				}
+			}
+		}
+		return closest;
+	}
 	
 	public void move(double period){//runs physics
 		
@@ -159,6 +202,11 @@ public class Goalie {
 	public void swapSides(){
 		this.isLeft=!this.isLeft;
 	}
+	//custom mathematical square function
+	private double sqr(double i){
+		return i*i;
+	}
+	
 	static public boolean inGoaliePossession(int possessor){
 		return possessor==blueGoaliePossession || possessor==redGoaliePossession;
 	}
