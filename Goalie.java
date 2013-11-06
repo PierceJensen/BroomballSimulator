@@ -62,7 +62,7 @@ public class Goalie {
 		double vy = 0;
 		double ballBearing = 0;
 		
-		if(ballPossessor != -1 && !inGoaliePossession(ballPossessor)){
+		if(ballPossessor != -1 && !inGoaliePossession(ballPossessor)){		
 			x1 = playerList.get(ballPossessor).x;
 			y1 = playerList.get(ballPossessor).y;
 			
@@ -80,30 +80,21 @@ public class Goalie {
 			ballBearing = Math.toDegrees(Math.atan2(vy,vx));
 		}
 		
-		if(inMyPossession(ballPossessor)){
+		if(inMyPossession(ballPossessor)&&GameState.state==GameState.GAME_GOALIE_BALL){
 			Entity temp;
-			
-
 				temp = this.checkForCalls(playerList,ballCall);
 				if(temp !=null){
 						targetFound=true;
-				}else{
+				}else if(GameState.delay<1){
 					temp = this.findClosestPlayer(playerList);
-						targetFound=false;
+					targetFound=true;
 				}
 		
+				
+			if(targetFound){
 				this.bearing=  Math.toDegrees(Math.atan2(temp.y-this.y,temp.x-this.x));
 				this.targetY = this.x*(temp.y-y0)/(temp.x-x0)+(temp.x*y0-x0*temp.y)/(temp.x-x0);
 		
-			this.bearing=  Math.toDegrees(Math.atan2(temp.y-this.y,temp.x-this.x));
-			this.targetY = this.x*(temp.y-y0)/(temp.x-x0)+(temp.x*y0-x0*temp.y)/(temp.x-x0);
-		
-			
-			if(this.targetY > this.y+5){
-				this.vy = this.walkSpeed;
-			} else if(targetY < this.y-5) {
-				this.vy = -this.walkSpeed;
-			} else {
 				this.vy = 0;
 				ballPossessor = -1;
 				ball.x = this.x + Math.cos(Math.toRadians(this.bearing))*500;
@@ -144,6 +135,7 @@ public class Goalie {
 					} else {
 						this.vy = 0;
 					}
+					
 					return ballPossessor;
 				}
 			}else{
@@ -157,16 +149,18 @@ public class Goalie {
 					} else {
 						this.vy = 0;
 					}
+
 					return ballPossessor;
 				}
 			}
-		
+			this.y = Math.min(this.y, 3430-this.size);
+			this.y = Math.max(this.y, 2590+this.size);
 		//CENTER RAY TRACE METHOD
 		this.targetY = this.x*(y1-y0)/(x1-x0)+(x1*y0-x0*y1)/(x1-x0);
 		
-		if(this.targetY > this.y){
+		if(this.targetY > this.y&& this.y+this.size<3490){
 			this.vy = this.walkSpeed;
-		} else if(targetY < this.y) {
+		} else if(targetY < this.y && this.y-this.size>2590) {
 			this.vy = -this.walkSpeed;
 		} else {
 			this.vy = 0;
@@ -227,9 +221,6 @@ public class Goalie {
 		if(Math.abs(this.y - this.targetY) < this.walkSpeed*period){
 			this.y = this.targetY;
 		}
-		
-		this.y = Math.min(this.y, 3430-this.size);
-		this.y = Math.max(this.y, 2590+this.size);
 	}
 	
 	public void swapSides(){

@@ -223,7 +223,7 @@ public class GameMechanics {
 			} else{
 				entity.radv = turnRate;
 			}
-			if(GameState.state == GameState.GAME_RUN)
+			if(!GameState.playerMovementDisabled())
 			{
 				entity.walking = keyArray[i][KEY_W] | keyArray[i][KEY_S];
 				entity.sideWalking = keyArray[i][KEY_A] | keyArray[i][KEY_D];
@@ -333,6 +333,11 @@ public class GameMechanics {
 		}
 		
 		//goalie physics/ai iteration
+				if(GameState.delay<=0&&Goalie.inGoaliePossession(ballPossessor)){
+					GameState.state=GameState.GAME_GOALIE_BALL;
+					GameState.delay=GameState.GAME_GOALIE_BALL_DELAY;
+				}
+		
 				ballPossessor = blueGoalie.goalieAI(ball, playerList, ballPossessor, ballCall);
 				blueGoalie.move(period);
 				ballPossessor = redGoalie.goalieAI(ball, playerList, ballPossessor, ballCall);
