@@ -35,6 +35,7 @@ public class Goalie {
 	
 	final double GOALIE_INTERACTION_DIST = 500;
 	
+	private boolean targetFound;
 	Goalie(boolean team, Point rayStart){
 		isBlue = team;
 		isLeft = team;
@@ -51,7 +52,7 @@ public class Goalie {
 		}
 	}
 	
-	public int goalieAI(Entity ball, ArrayList<Entity> playerList, int ballPossessor){
+	public int goalieAI(Entity ball, ArrayList<Entity> playerList, int ballPossessor, boolean[] ballCall){
 		//draw a ray trace from the center of the back of the goal to the ball, find where the goalie should be
 		double x0 = rayOrigin.x;
 		double y0 = rayOrigin.y;
@@ -80,9 +81,23 @@ public class Goalie {
 		}
 		
 		if(inMyPossession(ballPossessor)){
-			Entity temp = this.findClosestPlayer(playerList);
+			Entity temp;
+			
+
+				temp = this.checkForCalls(playerList,ballCall);
+				if(temp !=null){
+						targetFound=true;
+				}else{
+					temp = this.findClosestPlayer(playerList);
+						targetFound=false;
+				}
+		
+				this.bearing=  Math.toDegrees(Math.atan2(temp.y-this.y,temp.x-this.x));
+				this.targetY = this.x*(temp.y-y0)/(temp.x-x0)+(temp.x*y0-x0*temp.y)/(temp.x-x0);
+		
 			this.bearing=  Math.toDegrees(Math.atan2(temp.y-this.y,temp.x-this.x));
 			this.targetY = this.x*(temp.y-y0)/(temp.x-x0)+(temp.x*y0-x0*temp.y)/(temp.x-x0);
+		
 			
 			if(this.targetY > this.y+5){
 				this.vy = this.walkSpeed;
@@ -95,6 +110,7 @@ public class Goalie {
 				ball.y = this.y + Math.sin(Math.toRadians(this.bearing))*500;
 				ball.vx = Math.cos(Math.toRadians(this.bearing))*10000;
 				ball.vy = Math.sin(Math.toRadians(this.bearing))*10000;
+				targetFound=false;
 			}
 			return ballPossessor;
 		}else if(sqr(x1 - this.x) + sqr(y1 - this.y) < sqr(GOALIE_INTERACTION_DIST)){
@@ -182,7 +198,24 @@ public class Goalie {
 		}
 		return closest;
 	}
-	
+	private Entity checkForCalls(ArrayList<Entity>players, boolean[] calls){
+		if(this.isBlue){
+			for(int i = 0; i<5;i++){
+				if(calls[i]){
+					return players.get(i);
+				}
+			}
+			return null;
+		}else{
+			for(int i = 5; i<10;i++){
+				if(calls[i]){
+					return players.get(i);
+				}
+			}
+			return null;
+		}
+			
+	}
 	public void move(double period){//runs physics
 		
 		this.vx += this.ax*period;

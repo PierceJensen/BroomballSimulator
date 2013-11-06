@@ -95,8 +95,8 @@ public class GameMechanics {
 	final static double maxChargeTime=1;
 	private final int chargeBaseForce=2000;
 	boolean[] chargeCanceled;
-
-	
+	boolean[] ballCall;
+		
 	//initialization
 	public void init(){
 		
@@ -107,6 +107,8 @@ public class GameMechanics {
 		chargeTime = new double[10];
 		chargeCanceled = new boolean[10];
 		pushDelay = new double[10];
+		
+		ballCall = new boolean[10];
 		
 		/*build trigonometry tables*/
 		double toRadian = Math.PI/(180*trigScale);
@@ -313,6 +315,8 @@ public class GameMechanics {
 			if(pushDelay[i]>0&&!keyArray[i][KEY_SPACE]){
 				pushDelay[i]-=period;
 			}
+	
+			ballCall[i]=keyArray[i][KEY_ALT];
 			
 			//updates every entity's position. also capable of removing the entity
 			if(entity.move(period)){
@@ -329,9 +333,9 @@ public class GameMechanics {
 		}
 		
 		//goalie physics/ai iteration
-				ballPossessor = blueGoalie.goalieAI(ball, playerList, ballPossessor);
+				ballPossessor = blueGoalie.goalieAI(ball, playerList, ballPossessor, ballCall);
 				blueGoalie.move(period);
-				ballPossessor = redGoalie.goalieAI(ball, playerList, ballPossessor);
+				ballPossessor = redGoalie.goalieAI(ball, playerList, ballPossessor, ballCall);
 				redGoalie.move(period);
 	
 		//////// RULE AREA ///
