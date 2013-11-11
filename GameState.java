@@ -22,7 +22,7 @@ public class GameState {
 	static boolean randomPlayerPositions;
 	
 	public static boolean isGameDelayed(){
-		return isGoalScored()||state==GAME_PERIOD_OVER;
+		return isGoalScored()||state==GAME_PERIOD_OVER||state==GAME_GOALIE_BALL;
 	}
 	public static boolean isGoalScored(){
 		return state==GAME_RED_GOAL_SCORED||state==GAME_BLUE_GOAL_SCORED;

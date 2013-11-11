@@ -63,8 +63,8 @@ public class Goalie {
 		double ballBearing = 0;
 		
 		if(ballPossessor != -1 && !inGoaliePossession(ballPossessor)){		
-			x1 = playerList.get(ballPossessor).x;
-			y1 = playerList.get(ballPossessor).y;
+			x1 = playerList.get(ballPossessor).x+Math.cos(Math.toRadians(playerList.get(ballPossessor).bearing))*300;
+			y1 = playerList.get(ballPossessor).y+Math.sin(Math.toRadians(playerList.get(ballPossessor).bearing))*300;
 			
 			vx = playerList.get(ballPossessor).vx;
 			vy = playerList.get(ballPossessor).vy;
@@ -101,10 +101,23 @@ public class Goalie {
 				ball.y = this.y + Math.sin(Math.toRadians(this.bearing))*500;
 				ball.vx = Math.cos(Math.toRadians(this.bearing))*10000;
 				ball.vy = Math.sin(Math.toRadians(this.bearing))*10000;
+				GameState.state=GameState.GAME_RUN;
 				targetFound=false;
+			}else{
+				
+				this.targetY=3010;
+				if(this.targetY > this.y){
+					this.vy = this.walkSpeed;
+				} else if(targetY < this.y) {
+					this.vy = -this.walkSpeed;
+				} else {
+					this.vy = 0;
+				}
 			}
 			return ballPossessor;
 		}else if(sqr(x1 - this.x) + sqr(y1 - this.y) < sqr(GOALIE_INTERACTION_DIST)){
+			GameState.state=GameState.GAME_GOALIE_BALL;
+			GameState.delay=GameState.GAME_GOALIE_BALL_DELAY;
 			if (this.isBlue){
 				ballPossessor = Goalie.blueGoaliePossession;
 			}else{
